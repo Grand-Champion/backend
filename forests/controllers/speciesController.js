@@ -40,13 +40,11 @@ module.exports.getSpeciesMany = async (req, res, next) => {
 module.exports.getSpecies = async (req, res, next) => {
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const data = await prisma.species.findUnique({ where: {id} });
 	if(!data){
-		res.status(404).send("species not found");
-		return
+        throw {status: 404, message: "species not found"};
 	}
 	const response = {
 		data,
@@ -65,15 +63,12 @@ module.exports.getSpecies = async (req, res, next) => {
  */
 module.exports.createSpecies = async (req, res, next) => {
 	if(!req.body){
-		res.status(400).send("no data given")
+		throw {status: 400, message: "no data given"};
 	}
 	const {name, description} = req.body;
 	const species = await prisma.species.create({
 		data: {name, description}
 	});
-	if(!species){
-		res.status(500).send("species not created");
-	}
 
 	res.status(201).send(`species created with id ${species.id}`);
 };
@@ -86,28 +81,21 @@ module.exports.createSpecies = async (req, res, next) => {
  */
 module.exports.updateSpecies = async (req, res, next) => {
 	if(!req.body){
-		res.status(400).send("no data given")
+		throw {status: 400, message: "no data given"};
 	}
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const species = await prisma.species.findUnique({where: {id}});
 	if(!species){
-		res.status(404).send("species not found");
-		return;
+        throw {status: 404, message: "species not found"};
 	}
 	const {name, description} = req.body;
 	const updated = await prisma.species.update({
 		where: {id},
 		data: {name, description}
 	});
-
-	if(!updated){
-		res.status(500).send("failed to update species");
-		return;
-	}
 
 	res.status(200).send(`species with id ${updated.id} updated`);
 };
@@ -121,13 +109,11 @@ module.exports.updateSpecies = async (req, res, next) => {
 module.exports.deleteSpecies = async (req, res, next) => {
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const species = await prisma.species.findUnique({where: {id}});
 	if(!species){
-		res.status(404).send("species not found");
-		return;
+        throw {status: 404, message: "species not found"};
 	}
 	const result = await prisma.species.delete({where: {id}});
 	res.status(200).send(`species with id ${result.id} deleted`);

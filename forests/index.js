@@ -1,6 +1,7 @@
 const Express = require("express");
 const Dotenv = require("dotenv");
-const IndexRouter = require("./routes/index.js")
+const IndexRouter = require("./routes/index.js");
+const errorHandler = require("./middleware/errorHandler.js");
 
 const app = Express();
 
@@ -17,6 +18,8 @@ app.get('/', (req, res)=>{
 app.use((req, res) => {
   res.status(404).send("Hé, deze endpoint bestaat niet!");
 });
+
+app.use(errorHandler);
 
 const port = parseInt(process.env.PORT) || 3012;
 

@@ -21,17 +21,15 @@ module.exports = {};
  */
 module.exports.updatePlant = async (req, res, next) => {
 	if(!req.body){
-		res.status(400).send("no data given")
+		throw {status: 400, message: "no data given"};
 	}
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const plant = await prisma.plant.findUnique({where: {id}});
 	if(!plant){
-		res.status(404).send("plant not found");
-		return;
+        throw {status: 404, message: "plant not found"};
 	}
 	const {harvestPrediction, stage} = req.body;
 	//TODO: Deze valideren
@@ -41,11 +39,6 @@ module.exports.updatePlant = async (req, res, next) => {
 		where: {id},
 		data: {harvestPrediction, stage, speciesId, forestId}
 	});
-
-	if(!updated){
-		res.status(500).send("failed to update plant");
-		return;
-	}
 
 	res.status(200).send(`plant with id ${updated.id} updated`);
 };
@@ -59,8 +52,7 @@ module.exports.updatePlant = async (req, res, next) => {
 module.exports.getPlant = async (req, res, next) => {
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const data = await prisma.plant.findUnique({ 
         where: {id},
@@ -70,8 +62,7 @@ module.exports.getPlant = async (req, res, next) => {
         }
      });
 	if(!data){
-		res.status(404).send("plant not found");
-		return
+        throw {status: 404, message: "plant not found"};
 	}
 	const response = {
 		data,
@@ -91,21 +82,21 @@ module.exports.getPlant = async (req, res, next) => {
 module.exports.deletePlant = async (req, res, next) => {
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const plant = await prisma.plant.findUnique({where: {id}});
 	if(!plant){
-		res.status(404).send("plant not found");
-		return;
+        throw {status: 404, message: "plant not found"};
 	}
     try {
-        const result = prisma.conditions.delete({where: {plantId: id}});
+        const result = await prisma.conditions.delete({where: {plantId: id}});
     } catch (e) {
-        // doe niks, het kan zijn dat er geen conditions zijn voor die plant
-        console.warn(e.code);
+        if(e.code != "P2025"){
+            throw e;
+        }
+        // doe anders niks, er zijn gewoon geen conditions zijn voor die plant
     }
-	const result = prisma.plant.delete({where: {id}});
-	res.status(200).send(`plant with id ${plant.id} deleted`);
+	const result = await prisma.plant.delete({where: {id}});
+	res.status(200).send(`plant with id ${result.id} deleted`);
 
 }

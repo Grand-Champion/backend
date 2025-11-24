@@ -40,8 +40,7 @@ module.exports.getForests = async (req, res, next) => {
 module.exports.getForest = async (req, res, next) => {
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const data = await prisma.foodForest.findUnique({ 
 		where: {id},
@@ -54,8 +53,7 @@ module.exports.getForest = async (req, res, next) => {
 		}
 	});
 	if(!data){
-		res.status(404).send("forest not found");
-		return
+        throw {status: 404, message: "forest not found"};
 	}
 	const response = {
 		data,
@@ -75,7 +73,7 @@ module.exports.getForest = async (req, res, next) => {
  */
 module.exports.createForest = async (req, res, next) => {
 	if(!req.body){
-		res.status(400).send("no data given")
+        throw {status: 400, message: "no data given"};
 	}
 	const {name, location} = req.body;
 	//TODO: Deze valideren
@@ -83,9 +81,6 @@ module.exports.createForest = async (req, res, next) => {
 	const forest = await prisma.foodForest.create({
 		data: {name, location, ownerId}
 	});
-	if(!forest){
-		res.status(500).send("forest not created");
-	}
 
 	res.status(201).send(`forest created with id ${forest.id}`);
 };
@@ -98,17 +93,15 @@ module.exports.createForest = async (req, res, next) => {
  */
 module.exports.updateForest = async (req, res, next) => {
 	if(!req.body){
-		res.status(400).send("no data given")
+        throw {status: 400, message: "no data given"};
 	}
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const forest = await prisma.foodForest.findUnique({where: {id}});
 	if(!forest){
-		res.status(404).send("forest not found");
-		return;
+        throw {status: 404, message: "forest not found"};
 	}
 	const {name, location} = req.body;
 	//TODO: Deze valideren
@@ -117,11 +110,6 @@ module.exports.updateForest = async (req, res, next) => {
 		where: {id},
 		data: {name, location, ownerId}
 	});
-
-	if(!updated){
-		res.status(500).send("failed to update forest");
-		return;
-	}
 
 	res.status(200).send(`forest with id ${updated.id} updated`);
 };
@@ -135,13 +123,11 @@ module.exports.updateForest = async (req, res, next) => {
 module.exports.deleteForest = async (req, res, next) => {
 	const id = parseInt(req.params.id);
 	if(!Number.isInteger(id)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	const forest = await prisma.foodForest.findUnique({where: {id}});
 	if(!forest){
-		res.status(404).send("forest not found");
-		return;
+        throw {status: 404, message: "forest not found"};
 	}
 	const result = await prisma.foodForest.delete({where: {id}});
 	res.status(200).send(`forest with id ${result.id} deleted`);
@@ -151,29 +137,25 @@ module.exports.deleteForest = async (req, res, next) => {
 module.exports.createPlant = async (req, res, next) => {
 	const forestId = parseInt(req.params.id);
 	if(!Number.isInteger(forestId)){
-		res.status(400).send("no valid id given");
-		return;
+        throw {status: 400, message: "no valid id given"};
 	}
 	if(!req.body){
-		res.status(400).send("no data given")
+        throw {status: 400, message: "no data given"};
 	}
 	const forest = await prisma.foodForest.findUnique({where: {id: forestId}});
 	if(!forest){
-		res.status(404).send("forest not found");
-		return;
+        throw {status: 404, message: "forest not found"};
 	}
 
 	const {stage, harvestPrediction} = req.body;
 	const speciesId = parseInt(req.body.speciesId);
 	if(!Number.isInteger(speciesId)){
-		res.status(400).send("no valid speciesId given");
-		return;
+        throw {status: 400, message: "no valid speciesId id given"};
 	}
 
 	const species = await prisma.species.findUnique({where: {id: speciesId}});
 	if(!species){
-		res.status(404).send("species not found");
-		return;
+        throw {status: 404, message: "species not found"};
 	}
 
 	const plant = await prisma.plant.create({
