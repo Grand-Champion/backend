@@ -14,13 +14,15 @@ services:
     command: bash -c "npm install && npm run dev"
   forests:
     container_name: forests
-    build: ./forests
+    build: 
+      dockerfile: ../Dockerfile
+      context: forests
     volumes:
       - ./forests:/usr/src/app
     networks:
       - voedselbos
-    ports:
-      - "3012:3012"
+    #ports:
+    #  - "3012:3012"
     working_dir: /usr/src/app
     command: bash -c "npm install && npm run dev"
 
