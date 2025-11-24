@@ -7,7 +7,11 @@ const app = Express();
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
-app.use('/', IndexRouter);
+app.use('/api/v1/', IndexRouter);
+
+app.get('/', (req, res)=>{
+  res.send("Je de forests-api werkt!");
+});
 
 //404
 app.use((req, res) => {

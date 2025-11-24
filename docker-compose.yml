@@ -22,7 +22,9 @@ services:
     networks:
       - voedselbos
     working_dir: /usr/src/app
-    command: bash -c "npm install && npx prisma generate --no-hints && npx prisma migrate deploy && npm run dev"
+    #node --watch werkt niet met wsl2 helaas.
+    #command: bash -c "npm install && npx prisma generate --no-hints && npx prisma migrate deploy && npm run dev"
+    command: bash -c "npm install && npx prisma generate --no-hints && npx prisma migrate deploy && npm install -g nodemon && npx nodemon -L"
 
 networks:
   voedselbos:
