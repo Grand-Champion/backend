@@ -1,5 +1,5 @@
 const Express = require("express");
-const Dotenv = require("dotenv");
+require('dotenv').config()
 const IndexRouter = require("./routes/index.js")
 
 const app = Express();
@@ -11,11 +11,11 @@ app.use('/', IndexRouter);
 
 //404
 app.use((req, res) => {
-  res.status(404).send("Hé, deze endpoint bestaat niet!");
+    res.status(404).send("Hé, deze endpoint bestaat niet!");
 });
 
-const port = parseInt(process.env.PORT) || 3011;
+const port = parseInt(process.env.PORT, 10) || 3011;
 
 app.listen(port, () => {
-  console.log(`🍿 Express running → PORT ${port}`);
+    console.log(`🍿 Express running → PORT ${port}`);
 });

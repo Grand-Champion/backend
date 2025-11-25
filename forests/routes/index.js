@@ -23,7 +23,7 @@ router.patch("/species/:id", updateSpecies);
 router.delete("/species/:id", deleteSpecies);
 
 router.get('/', (req, res) => {
-  res.send('Je hebt de forests api v1 bereikt!');
+    res.send('Je hebt de forests api v1 bereikt!');
 });
 
 module.exports = router;

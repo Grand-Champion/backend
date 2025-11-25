@@ -1,4 +1,4 @@
-module.exports = (err, req, res, next) =>{
+module.exports = (err, req, res) =>{
     err.status ??= 500;
     res.status(err.status).json({
         status: err.status,

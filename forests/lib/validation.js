@@ -12,15 +12,17 @@ module.exports = class Validation {
      * @returns {Number} 
      */
     static int (int, name, verplicht) {
-        if(int == undefined || int == null){
-            if(verplicht) throw {status: 400, message: `no ${name} given`};
-            else return undefined;
+        if(int === undefined || int === null){
+            if(verplicht) {
+                throw {status: 400, message: `no ${name} given`};
+            }
+            return undefined;
         }
-        int = parseInt(int, 10);
-        if(!Number.isInteger(int)){
+        const nint = parseInt(int, 10);
+        if(!Number.isInteger(nint)){
             throw {status: 400, message: `no valid ${name} given, must be an integer`};
         }
-        else return int;
+        return nint;
     }
 
     /**
