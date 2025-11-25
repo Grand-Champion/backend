@@ -55,7 +55,30 @@ module.exports = class SpeciesController {
 	 * @param {Response} res 
 	 */
     static async createSpecies (req, res) {
-        const data = Validation.body(req.body, ["description"], ["name"]);
+        const data = Validation.body(
+            req.body, 
+            [
+                "description",
+                "category",
+                "scientificName",
+                "harvestSeason",
+                "sunRequirement",
+                "waterNeeds",
+                "maintenance",
+                "plants",
+                "minTemperature",
+                "maxTemperature",
+                "minHumidity",
+                "maxHumidity",
+                "minSoilPH",
+                "maxSoilPH",
+                "minSoilMoisture",
+                "maxSoilMoisture",
+                "minSunlight",
+                "maxSunlight"
+            ], 
+            ["name"]
+        );
 
         const species = await prisma.species.create({
             data
@@ -70,7 +93,26 @@ module.exports = class SpeciesController {
 	 * @param {Response} res 
 	 */
     static async updateSpecies (req, res) {
-        const data = Validation.body(req.body, ["description", "name"]);
+        const data = Validation.body(req.body, [
+            "description", 
+            "name", 
+            "category",
+            "scientificName",
+            "harvestSeason",
+            "sunRequirement",
+            "waterNeeds",
+            "maintenance",
+            "plants",
+            "minTemperature",
+            "maxTemperature",
+            "minHumidity",
+            "maxHumidity",
+            "minSoilPH",
+            "maxSoilPH",
+            "minSoilMoisture",
+            "maxSoilMoisture",
+            "minSunlight",
+            "maxSunlight"]);
         const id = Validation.int(req.params.id, "id", true);
 
         const species = await prisma.species.findUnique({where: {id}});

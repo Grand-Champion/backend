@@ -115,8 +115,10 @@ module.exports = class ForestController {
 
     static async createPlant (req, res) {
         const forestId = Validation.int(req.params.id, "(forest) id", true);
-        const data = Validation.body(req.body, ["stage", "harvestPrediction"], ["speciesId"]);
+        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image"], ["speciesId", "posX", "posY"]);
         data.speciesId = Validation.int(data.speciesId, "speciesId", true);
+        data.posX = Validation.number(data.posX, "posX", true);
+        data.posY = Validation.number(data.posY, "posY", true);
 
         const forest = await prisma.foodForest.findUnique({where: {id: forestId}});
         if(!forest){

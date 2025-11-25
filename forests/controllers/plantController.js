@@ -19,7 +19,9 @@ module.exports = class PlantController {
 	 */
     static async updatePlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
-        const data = Validation.body(req.body, ["harvestPrediction", "stage", "speciesId", "forestId"]);
+        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "speciesId", "posX", "posY"]);
+        data.posX = Validation.number(data.posX, "posX", true);
+        data.posY = Validation.number(data.posY, "posY", true);
         //TODO: Deze valideren
         data.forestId = Validation.int(data.forestId, "forestId");
         data.speciesId = Validation.int(data.speciesId, "speciesId");

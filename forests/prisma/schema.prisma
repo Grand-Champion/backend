@@ -18,35 +18,56 @@ model FoodForest {
   id       Int     @id @default(autoincrement())
   name     String
   location String
-  owner    User?    @relation(fields: [ownerId], references: [id])
+  owner    User?   @relation(fields: [ownerId], references: [id])
   ownerId  Int?
   plants   Plant[]
 }
 
 model Species {
-  id          Int     @id @default(autoincrement())
-  name        String
-  description String?
-  plants      Plant[]
+  id              Int     @id @default(autoincrement())
+  name            String
+  description     String?
+  category        String?
+  scientificName  String?
+  harvestSeason   String?
+  sunRequirement  String?
+  waterNeeds      String?
+  maintenance     String?
+  plants          Plant[]
+  minTemperature  Float?
+  maxTemperature  Float?
+  minHumidity     Float?
+  maxHumidity     Float?
+  minSoilPH       Float?
+  maxSoilPH       Float?
+  minSoilMoisture Float?
+  maxSoilMoisture Float?
+  minSunlight     Float?
+  maxSunlight     Float?
 }
 
 model Plant {
-  id                Int        @id @default(autoincrement())
+  id                Int         @id @default(autoincrement())
   stage             String?
   harvestPrediction String?
-  species           Species    @relation(fields: [speciesId], references: [id])
+  species           Species     @relation(fields: [speciesId], references: [id])
   speciesId         Int
-  foodForest        FoodForest @relation(fields: [foodForestId], references: [id])
+  foodForest        FoodForest  @relation(fields: [foodForestId], references: [id])
   foodForestId      Int
-  conditions Conditions?
+  conditions        Conditions?
+  height            String?
+  image             String?
+  posX              Float       @default(0)
+  posY              Float       @default(0)
 }
 
 model Conditions {
-  plant Plant @relation(fields: [plantId], references: [id])
-  plantId Int @id
-  temperature Float?
-  humidity Float?
-  soilPH Float?
+  plant        Plant   @relation(fields: [plantId], references: [id])
+  plantId      Int     @id
+  temperature  Float?
+  humidity     Float?
+  soilPH       Float?
   soilMoisture Float?
-  sunlight Float?
+  sunlight     Float?
+  status       String?
 }
