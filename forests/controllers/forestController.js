@@ -11,143 +11,141 @@ const adapter = new PrismaLibSql({
 
 const prisma = new PrismaClient({adapter}); 
 
-module.exports = {};
-
-// forest controller code
-
-/**
- * Stuurt een lijst van forests terug
- * @param {Request} req 
- * @param {Response} res 
- * @param {function} [next]
- */
-module.exports.getForests = async (req, res, next) => {
-	const data = await prisma.foodForest.findMany();
-	const response = {
-		data,
-		meta: {
-			count: data.length,
-			url: req.originalUrl
-		}
+module.exports = class ForestController {
+	/**
+	 * Stuurt een lijst van forests terug
+	 * @param {Request} req 
+	 * @param {Response} res 
+	 * @param {function} [next]
+	 */
+	static async getForests  (req, res, next) {
+		const data = await prisma.foodForest.findMany();
+		const response = {
+			data,
+			meta: {
+				count: data.length,
+				url: req.originalUrl
+			}
+		};
+		res.json(response);
 	};
-	res.json(response);
-};
 
-/**
- * Stuurt een specifieke forest terug
- * @param {Request} req 
- * @param {Response} res 
- * @param {function} [next]
- */
-module.exports.getForest = async (req, res, next) => {
-	const id = Validation.int(req.params.id, "id", true);
-	const data = await prisma.foodForest.findUnique({ 
-		where: {id},
-		include: {
-			plants: {
-				include: {
-					species: true
+	/**
+	 * Stuurt een specifieke forest terug
+	 * @param {Request} req 
+	 * @param {Response} res 
+	 * @param {function} [next]
+	 */
+	static async getForest (req, res, next) {
+		const id = Validation.int(req.params.id, "id", true);
+		const data = await prisma.foodForest.findUnique({ 
+			where: {id},
+			include: {
+				plants: {
+					include: {
+						species: true
+					}
 				}
 			}
+		});
+		if(!data){
+			throw {status: 404, message: "forest not found"};
 		}
-	});
-	if(!data){
-        throw {status: 404, message: "forest not found"};
-	}
-	const response = {
-		data,
-		meta: {
-			url: req.originalUrl
-		}
+		const response = {
+			data,
+			meta: {
+				url: req.originalUrl
+			}
+		};
+		res.json(response);
+		
 	};
-	res.json(response);
-	
-};
 
-/**
- * Maakt een nieuwe forest aan
- * @param {Request} req 
- * @param {Response} res 
- * @param {function} [next]
- */
-module.exports.createForest = async (req, res, next) => {
-	const data = Validation.body(req.body, ["ownerId"], ["name", "location"]);
-	//TODO: Deze valideren (dat de owner ook echt bestaat)
-	data.ownerId = Validation.int(data.ownerId, "ownerId");
-	const forest = await prisma.foodForest.create({
-		data
-	});
+	/**
+	 * Maakt een nieuwe forest aan
+	 * @param {Request} req 
+	 * @param {Response} res 
+	 * @param {function} [next]
+	 */
+	static async createForest (req, res, next) {
+		const data = Validation.body(req.body, ["ownerId"], ["name", "location"]);
+		//TODO: Deze valideren (dat de owner ook echt bestaat)
+		data.ownerId = Validation.int(data.ownerId, "ownerId");
+		const forest = await prisma.foodForest.create({
+			data
+		});
 
-	res.status(201).send(`forest created with id ${forest.id}`);
-};
+		res.status(201).send(`forest created with id ${forest.id}`);
+	};
 
-/**
- * Werkt een forest bij
- * @param {Request} req 
- * @param {Response} res 
- * @param {function} [next]
- */
-module.exports.updateForest = async (req, res, next) => {
-	const data = Validation.body(req.body, ["ownerId", "name", "location"]);
-	//TODO: Deze valideren (dat de owner ook echt bestaat)
-	data.ownerId = Validation.int(data.ownerId, "ownerId");
-	const id = Validation.int(req.params.id, "id", true);
-	const forest = await prisma.foodForest.findUnique({where: {id}});
-	if(!forest){
-        throw {status: 404, message: "forest not found"};
-	}
-	const updated = await prisma.foodForest.update({
-		where: {id},
-		data
-	});
-
-	res.status(200).send(`forest with id ${updated.id} updated`);
-};
-
-/**
- * Verwijdert een forest
- * @param {Request} req 
- * @param {Response} res 
- * @param {function} [next]
- */
-module.exports.deleteForest = async (req, res, next) => {
-	const id = Validation.int(req.params.id, "id", true);
-	const forest = await prisma.foodForest.findUnique({where: {id}});
-	if(!forest){
-        throw {status: 404, message: "forest not found"};
-	}
-	const result = await prisma.foodForest.delete({where: {id}});
-	res.status(200).send(`forest with id ${result.id} deleted`);
-
-}
-
-module.exports.createPlant = async (req, res, next) => {
-	const forestId = Validation.int(req.params.id, "(forest) id", true);
-	const data = Validation.body(req.body, ["stage", "harvestPrediction"], ["speciesId"]);
-	data.speciesId = Validation.int(data.speciesId, "speciesId", true);
-	
-	const forest = await prisma.foodForest.findUnique({where: {id: forestId}});
-	if(!forest){
-        throw {status: 404, message: "forest not found"};
-	}
-
-	const species = await prisma.species.findUnique({where: {id: speciesId}});
-	if(!species){
-        throw {status: 404, message: "species not found"};
-	}
-
-	const plant = await prisma.plant.create({
-		data: {
-			foodForest: {
-				connect: {id: forestId}
-			},
-			species: {
-				connect: {id: speciesId}
-			}, 
-			stage, 
-			harvestPrediction
+	/**
+	 * Werkt een forest bij
+	 * @param {Request} req 
+	 * @param {Response} res 
+	 * @param {function} [next]
+	 */
+	static async updateForest (req, res, next) {
+		const data = Validation.body(req.body, ["ownerId", "name", "location"]);
+		//TODO: Deze valideren (dat de owner ook echt bestaat)
+		data.ownerId = Validation.int(data.ownerId, "ownerId");
+		const id = Validation.int(req.params.id, "id", true);
+		const forest = await prisma.foodForest.findUnique({where: {id}});
+		if(!forest){
+			throw {status: 404, message: "forest not found"};
 		}
-	});
+		const updated = await prisma.foodForest.update({
+			where: {id},
+			data
+		});
 
-	res.status(201).send(`plant created with id ${plant.id}`);
+		res.status(200).send(`forest with id ${updated.id} updated`);
+	};
+
+	/**
+	 * Verwijdert een forest
+	 * @param {Request} req 
+	 * @param {Response} res 
+	 * @param {function} [next]
+	 */
+	static async deleteForest (req, res, next) {
+		const id = Validation.int(req.params.id, "id", true);
+		const forest = await prisma.foodForest.findUnique({where: {id}});
+		if(!forest){
+			throw {status: 404, message: "forest not found"};
+		}
+		const result = await prisma.foodForest.delete({where: {id}});
+		res.status(200).send(`forest with id ${result.id} deleted`);
+
+	}
+
+	static async createPlant (req, res, next) {
+		const forestId = Validation.int(req.params.id, "(forest) id", true);
+		const data = Validation.body(req.body, ["stage", "harvestPrediction"], ["speciesId"]);
+		data.speciesId = Validation.int(data.speciesId, "speciesId", true);
+
+		const forest = await prisma.foodForest.findUnique({where: {id: forestId}});
+		if(!forest){
+			throw {status: 404, message: "forest not found"};
+		}
+
+		const species = await prisma.species.findUnique({where: {id: speciesId}});
+		if(!species){
+			throw {status: 404, message: "species not found"};
+		}
+
+		const plant = await prisma.plant.create({
+			data: {
+				foodForest: {
+					connect: {id: forestId}
+				},
+				species: {
+					connect: {id: speciesId}
+				}, 
+				stage, 
+				harvestPrediction
+			}
+		});
+
+		res.status(201).send(`plant created with id ${plant.id}`);
+	}
 }
