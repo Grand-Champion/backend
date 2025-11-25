@@ -3,6 +3,8 @@ const { PrismaClient } = require('@prisma/client');
 
 const { PrismaLibSql } = require('@prisma/adapter-libsql');
 
+const Validation = require("../lib/validation");
+
 const adapter = new PrismaLibSql({
   url: "file:./file.db"
 })
@@ -38,10 +40,7 @@ module.exports.getForests = async (req, res, next) => {
  * @param {function} [next]
  */
 module.exports.getForest = async (req, res, next) => {
-	const id = parseInt(req.params.id);
-	if(!Number.isInteger(id)){
-        throw {status: 400, message: "no valid id given"};
-	}
+	const id = Validation.int(req.params.id, "id", true);
 	const data = await prisma.foodForest.findUnique({ 
 		where: {id},
 		include: {
@@ -72,14 +71,11 @@ module.exports.getForest = async (req, res, next) => {
  * @param {function} [next]
  */
 module.exports.createForest = async (req, res, next) => {
-	if(!req.body){
-        throw {status: 400, message: "no data given"};
-	}
-	const {name, location} = req.body;
-	//TODO: Deze valideren
-    const ownerId = Number.isInteger(parseInt(req.body.ownerId)) ? parseInt(req.body.ownerId) : undefined;
+	const data = Validation.body(req.body, ["ownerId"], ["name", "location"]);
+	//TODO: Deze valideren (dat de owner ook echt bestaat)
+	data.ownerId = Validation.int(data.ownerId, "ownerId");
 	const forest = await prisma.foodForest.create({
-		data: {name, location, ownerId}
+		data
 	});
 
 	res.status(201).send(`forest created with id ${forest.id}`);
@@ -92,23 +88,17 @@ module.exports.createForest = async (req, res, next) => {
  * @param {function} [next]
  */
 module.exports.updateForest = async (req, res, next) => {
-	if(!req.body){
-        throw {status: 400, message: "no data given"};
-	}
-	const id = parseInt(req.params.id);
-	if(!Number.isInteger(id)){
-        throw {status: 400, message: "no valid id given"};
-	}
+	const data = Validation.body(req.body, ["ownerId", "name", "location"]);
+	//TODO: Deze valideren (dat de owner ook echt bestaat)
+	data.ownerId = Validation.int(data.ownerId, "ownerId");
+	const id = Validation.int(req.params.id, "id", true);
 	const forest = await prisma.foodForest.findUnique({where: {id}});
 	if(!forest){
         throw {status: 404, message: "forest not found"};
 	}
-	const {name, location} = req.body;
-	//TODO: Deze valideren
-    const ownerId = Number.isInteger(parseInt(req.body.ownerId)) ? parseInt(req.body.ownerId) : undefined;
 	const updated = await prisma.foodForest.update({
 		where: {id},
-		data: {name, location, ownerId}
+		data
 	});
 
 	res.status(200).send(`forest with id ${updated.id} updated`);
@@ -121,10 +111,7 @@ module.exports.updateForest = async (req, res, next) => {
  * @param {function} [next]
  */
 module.exports.deleteForest = async (req, res, next) => {
-	const id = parseInt(req.params.id);
-	if(!Number.isInteger(id)){
-        throw {status: 400, message: "no valid id given"};
-	}
+	const id = Validation.int(req.params.id, "id", true);
 	const forest = await prisma.foodForest.findUnique({where: {id}});
 	if(!forest){
         throw {status: 404, message: "forest not found"};
@@ -135,22 +122,13 @@ module.exports.deleteForest = async (req, res, next) => {
 }
 
 module.exports.createPlant = async (req, res, next) => {
-	const forestId = parseInt(req.params.id);
-	if(!Number.isInteger(forestId)){
-        throw {status: 400, message: "no valid id given"};
-	}
-	if(!req.body){
-        throw {status: 400, message: "no data given"};
-	}
+	const forestId = Validation.int(req.params.id, "(forest) id", true);
+	const data = Validation.body(req.body, ["stage", "harvestPrediction"], ["speciesId"]);
+	data.speciesId = Validation.int(data.speciesId, "speciesId", true);
+	
 	const forest = await prisma.foodForest.findUnique({where: {id: forestId}});
 	if(!forest){
         throw {status: 404, message: "forest not found"};
-	}
-
-	const {stage, harvestPrediction} = req.body;
-	const speciesId = parseInt(req.body.speciesId);
-	if(!Number.isInteger(speciesId)){
-        throw {status: 400, message: "no valid speciesId id given"};
 	}
 
 	const species = await prisma.species.findUnique({where: {id: speciesId}});

@@ -3,6 +3,8 @@ const { PrismaClient } = require('@prisma/client');
 
 const { PrismaLibSql } = require('@prisma/adapter-libsql');
 
+const Validation = require("../lib/validation");
+
 const adapter = new PrismaLibSql({
   url: "file:./file.db"
 })
@@ -20,24 +22,19 @@ module.exports = {};
  * @param {function} [next]
  */
 module.exports.updatePlant = async (req, res, next) => {
-	if(!req.body){
-		throw {status: 400, message: "no data given"};
-	}
-	const id = parseInt(req.params.id);
-	if(!Number.isInteger(id)){
-        throw {status: 400, message: "no valid id given"};
-	}
+	const id = Validation.int(req.params.id, "id", true);
+	const data = Validation.body(req.body, ["harvestPrediction", "stage", "speciesId", "forestId"]);
+	//TODO: Deze valideren
+	data.forestId = Validation.int(data.forestId, "forestId");
+	data.speciesId = Validation.int(data.speciesId, "speciesId");
+
 	const plant = await prisma.plant.findUnique({where: {id}});
 	if(!plant){
         throw {status: 404, message: "plant not found"};
 	}
-	const {harvestPrediction, stage} = req.body;
-	//TODO: Deze valideren
-    const speciesId = Number.isInteger(parseInt(req.body.speciesId)) ? parseInt(req.body.speciesId) : undefined;
-    const forestId = Number.isInteger(parseInt(req.body.forestId)) ? parseInt(req.body.forestId) : undefined;
 	const updated = await prisma.plant.update({
 		where: {id},
-		data: {harvestPrediction, stage, speciesId, forestId}
+		data
 	});
 
 	res.status(200).send(`plant with id ${updated.id} updated`);
@@ -50,10 +47,7 @@ module.exports.updatePlant = async (req, res, next) => {
  * @param {function} [next]
  */
 module.exports.getPlant = async (req, res, next) => {
-	const id = parseInt(req.params.id);
-	if(!Number.isInteger(id)){
-        throw {status: 400, message: "no valid id given"};
-	}
+	const id = Validation.int(req.params.id, "id", true);
 	const data = await prisma.plant.findUnique({ 
         where: {id},
         include: {
@@ -80,10 +74,7 @@ module.exports.getPlant = async (req, res, next) => {
  * @param {function} [next]
  */
 module.exports.deletePlant = async (req, res, next) => {
-	const id = parseInt(req.params.id);
-	if(!Number.isInteger(id)){
-        throw {status: 400, message: "no valid id given"};
-	}
+	const id = Validation.int(req.params.id, "id", true);
 	const plant = await prisma.plant.findUnique({where: {id}});
 	if(!plant){
         throw {status: 404, message: "plant not found"};
