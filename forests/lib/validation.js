@@ -6,10 +6,10 @@
 module.exports = class Validation {
     /**
      * Als het een integer is, dan maakt hij er een nummer van, anders is het undefined of gooit hij een error 400 als er een name is.
-     * @param {String} int 
-     * @param {String} name 
-     * @param {Boolean?} verplicht
-     * @returns {Number} 
+     * @param {string} int 
+     * @param {string} name 
+     * @param {boolean?} verplicht
+     * @returns {number?} een geheel nummer of undefined
      */
     static int (int, name, verplicht) {
         if(int === undefined || int === null){
@@ -28,10 +28,10 @@ module.exports = class Validation {
     
     /**
      * Als het een nummer is, dan maakt hij er een nummer van, anders is het undefined of gooit hij een error 400 als er een name is.
-     * @param {String} string 
-     * @param {String} name 
-     * @param {Boolean?} verplicht
-     * @returns {Number} 
+     * @param {string} string 
+     * @param {string} name 
+     * @param {boolean?} verplicht
+     * @returns {number?} een nummer of undefined
      */
     static number(string, name, verplicht) {
         if(string === undefined || string === null){
@@ -50,10 +50,10 @@ module.exports = class Validation {
 
     /**
      * Als je een object geeft, kijkt hij of alle verplichte dingen er in zitten (gooit anders een error) en geeft hij een kopie zonder alles wat er niet in hoort terug.
-     * @param {Object} body 
-     * @param {String[]?} optioneel 
-     * @param {String[]?} verplicht 
-     * @returns {Object}
+     * @param {object} body 
+     * @param {string[]?} optioneel 
+     * @param {string[]?} verplicht 
+     * @returns {object} een object met de sowieso de verplichte waarden en misschien de optionele
      */
     static body (body, optioneel = [], verplicht = []) {
         const data = {};

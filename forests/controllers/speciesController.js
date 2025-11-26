@@ -13,10 +13,10 @@ const prisma = new PrismaClient({adapter});
 module.exports = class SpeciesController {
 
     /**
-	 * Stuurt een lijst van species terug - helaas is het meervoud van species species, erg jammer, maar dan heet het maar zo
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Stuurt een lijst van species terug - helaas is het meervoud van species species, erg jammer, maar dan heet het maar zo
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async getSpeciesMany (req, res) {
         const data = await prisma.species.findMany();
         const response = {
@@ -30,10 +30,10 @@ module.exports = class SpeciesController {
     };
 
     /**
-	 * Stuurt een specifieke species terug
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Stuurt een specifieke species terug
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async getSpecies (req, res) {
         const id = Validation.int(req.params.id, "id", true);
         const data = await prisma.species.findUnique({ where: {id} });
@@ -50,10 +50,10 @@ module.exports = class SpeciesController {
     };
 
     /**
-	 * Maakt een nieuwe species aan
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Maakt een nieuwe species aan
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async createSpecies (req, res) {
         const data = Validation.body(
             req.body, 
@@ -88,10 +88,10 @@ module.exports = class SpeciesController {
     };
 
     /**
-	 * Werkt een species bij
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Werkt een species bij
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async updateSpecies (req, res) {
         const data = Validation.body(req.body, [
             "description", 
@@ -129,10 +129,10 @@ module.exports = class SpeciesController {
     };
 
     /**
-	 * Verwijdert een species
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Verwijdert een species
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async deleteSpecies (req, res) {
         const id = Validation.int(req.params.id, "id", true);
 

@@ -4,6 +4,7 @@ import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
+import  jsdoc  from 'eslint-plugin-jsdoc';
 
 // Load .gitignore patterns to exclude from linting
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
@@ -15,6 +16,7 @@ export default defineConfig(
     js.configs.recommended,
     // Disable ESLint rules that conflict with Prettier
     prettier,
+    jsdoc.configs['flat/recommended'],
     {
         // Define global variables available in browser and Node.js
         languageOptions: {
@@ -149,4 +151,17 @@ export default defineConfig(
             'no-console': 'off'
         }
     },
+    // jsdoc
+    {
+        files: ['**/*.js'],
+        // `plugins` here is not necessary if including the above config
+        plugins: {
+            jsdoc,
+        },
+        rules: {
+            'jsdoc/require-description': 'warn',
+            "jsdoc/require-param-description": "off",
+            "jsdoc/require-jsdoc": "warn"
+        }
+    }
 );

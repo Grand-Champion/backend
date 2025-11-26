@@ -13,10 +13,10 @@ const prisma = new PrismaClient({adapter});
 
 module.exports = class ForestController {
     /**
-	 * Stuurt een lijst van forests terug
-	 * @param {Request} req 
-	 * @param {Response} res
-	 */
+     * Stuurt een lijst van forests terug
+     * @param {Request} req 
+     * @param {Response} res
+     */
     static async getForests  (req, res) {
         const data = await prisma.foodForest.findMany();
         const response = {
@@ -30,10 +30,10 @@ module.exports = class ForestController {
     };
 
     /**
-	 * Stuurt een specifieke forest terug
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Stuurt een specifieke forest terug
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async getForest (req, res) {
         const id = Validation.int(req.params.id, "id", true);
         const data = await prisma.foodForest.findUnique({ 
@@ -60,10 +60,10 @@ module.exports = class ForestController {
     };
 
     /**
-	 * Maakt een nieuwe forest aan
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Maakt een nieuwe forest aan
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async createForest (req, res) {
         const data = Validation.body(req.body, ["ownerId"], ["name", "location"]);
         //TODO: Deze valideren (dat de owner ook echt bestaat)
@@ -76,10 +76,10 @@ module.exports = class ForestController {
     };
 
     /**
-	 * Werkt een forest bij
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Werkt een forest bij
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async updateForest (req, res) {
         const data = Validation.body(req.body, ["ownerId", "name", "location"]);
         //TODO: Deze valideren (dat de owner ook echt bestaat)
@@ -98,10 +98,10 @@ module.exports = class ForestController {
     };
 
     /**
-	 * Verwijdert een forest
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Verwijdert een forest
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async deleteForest (req, res) {
         const id = Validation.int(req.params.id, "id", true);
         const forest = await prisma.foodForest.findUnique({where: {id}});

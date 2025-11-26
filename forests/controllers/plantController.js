@@ -13,10 +13,10 @@ const prisma = new PrismaClient({adapter});
 
 module.exports = class PlantController {
     /**
-	 * Werkt een plant bij
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Werkt een plant bij
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async updatePlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
         const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "speciesId", "posX", "posY"]);
@@ -39,10 +39,10 @@ module.exports = class PlantController {
     };
 
     /**
-	 * Stuurt een specifieke plant terug
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Stuurt een specifieke plant terug
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async getPlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
         const data = await prisma.plant.findUnique({ 
@@ -65,10 +65,10 @@ module.exports = class PlantController {
     };
 
     /**
-	 * Verwijdert een plant
-	 * @param {Request} req 
-	 * @param {Response} res 
-	 */
+     * Verwijdert een plant
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async deletePlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
         const plant = await prisma.plant.findUnique({where: {id}});
