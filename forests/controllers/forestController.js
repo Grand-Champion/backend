@@ -112,42 +112,4 @@ module.exports = class ForestController {
         res.status(200).send(`forest with id ${result.id} deleted`);
 
     }
-
-    /**
-     * Maakt een plant aan in het bos
-     * @param {Request} req 
-     * @param {Response} res 
-     */
-    static async createPlant (req, res) {
-        const forestId = Validation.int(req.params.id, "(forest) id", true);
-        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image"], ["speciesId", "posX", "posY"]);
-        data.speciesId = Validation.int(data.speciesId, "speciesId", true);
-        data.posX = Validation.number(data.posX, "posX", true);
-        data.posY = Validation.number(data.posY, "posY", true);
-
-        const forest = await prisma.foodForest.findUnique({where: {id: forestId}});
-        if(!forest){
-            throw {status: 404, message: "forest not found"};
-        }
-
-        const species = await prisma.species.findUnique({where: {id: speciesId}});
-        if(!species){
-            throw {status: 404, message: "species not found"};
-        }
-
-        const plant = await prisma.plant.create({
-            data: {
-                foodForest: {
-                    connect: {id: forestId}
-                },
-                species: {
-                    connect: {id: speciesId}
-                }, 
-                stage, 
-                harvestPrediction
-            }
-        });
-
-        res.status(201).send(`plant created with id ${plant.id}`);
-    }
 }
