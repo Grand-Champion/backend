@@ -113,6 +113,11 @@ module.exports = class ForestController {
 
     }
 
+    /**
+     * Maakt een plant aan in het bos
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async createPlant (req, res) {
         const forestId = Validation.int(req.params.id, "(forest) id", true);
         const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image"], ["speciesId", "posX", "posY"]);
