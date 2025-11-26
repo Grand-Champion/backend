@@ -5,7 +5,7 @@
 
 module.exports = class Validation {
     /**
-     * Als het een integer is, dan maakt hij er een nummer van, anders is het undefined of gooit hij een error 400 als er een name is.
+     * Als de string een geldige integer is, dan maakt hij er een nummer van, anders is het undefined of gooit hij een error 400 als het verplicht is.
      * @param {string} int 
      * @param {string} name 
      * @param {boolean?} verplicht
@@ -27,7 +27,7 @@ module.exports = class Validation {
 
     
     /**
-     * Als het een nummer is, dan maakt hij er een nummer van, anders is het undefined of gooit hij een error 400 als er een name is.
+     * Als de string een geldig nummer is, dan maakt hij er een nummer van, anders is het undefined of gooit hij een error 400  als het verplicht is.
      * @param {string} string 
      * @param {string} name 
      * @param {boolean?} verplicht

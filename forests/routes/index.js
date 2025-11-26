@@ -4,7 +4,7 @@ const { getSpeciesMany, getSpecies, createSpecies, updateSpecies, deleteSpecies 
 const { getPlant, updatePlant, deletePlant, createPlant } = require("../controllers/plantController.js");
 const router = Express.Router();
 
-router.get("/forests", /* hier bijv. Cors middleware, */getForests);
+router.get("/forests", /* als je middleware nodig hebt (bijv. authenticatie), zou je die hier toe kunnen voegen */getForests);
 router.get("/forests/:id", getForest);
 router.post("/forests", createForest);
 router.patch("/forests/:id", updateForest);

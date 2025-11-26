@@ -78,10 +78,11 @@ module.exports = class PlantController {
         try {
             await prisma.conditions.delete({where: {plantId: id}});
         } catch (e) {
+            // alleen als het een error P2025 is (we kunnen de conditions niet verwijderen omdat ze niet bestaan) negeren we hem,
+            // anders throwen we hem weer zodat de error handler hem oppakt.
             if(e.code !== "P2025"){
                 throw e;
             }
-            // doe anders niks, er zijn gewoon geen conditions zijn voor die plant
         }
         const result = await prisma.plant.delete({where: {id}});
         res.status(200).send(`plant with id ${result.id} deleted`);
