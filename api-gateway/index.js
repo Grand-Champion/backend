@@ -14,7 +14,7 @@ app.use((req, res) => {
     res.status(404).send("Hé, deze endpoint bestaat niet!");
 });
 
-const port = parseInt(process.env.PORT, 10) || 3011;
+const port = parseInt(process.env.GATEWAY_PORT, 10) || 3011;
 
 app.listen(port, () => {
     console.log(`🍿 Express running → PORT ${port}`);

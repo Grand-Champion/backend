@@ -3,8 +3,11 @@ const { createProxyMiddleware, fixRequestBody } = require("http-proxy-middleware
 
 const router = Express.Router();
 
+const forests_port = parseInt(process.env.FORESTS_PORT, 10) || 3012;
+const forests_ip = parseInt(process.env.FORESTS_IP, 10) || "forests";
+
 const forestProxyMiddleware = createProxyMiddleware({
-    target: 'http://forests:3012/',
+    target: `http://${forests_ip}:${forests_port}/`,
     on: {
         proxyReq: fixRequestBody,
     },
