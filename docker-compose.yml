@@ -1,0 +1,31 @@
+services:
+  gateway:
+    container_name: api-gateway
+    build: 
+      dockerfile: ../Dockerfile
+      context: api-gateway
+    volumes:
+      - ./api-gateway:/usr/src/app
+    networks:
+      - voedselbos
+    ports:
+      - "3011:3011"
+    working_dir: /usr/src/app
+    command: bash -c "npm install && npm run dev"
+  forests:
+    container_name: forests
+    build: 
+      dockerfile: ../Dockerfile
+      context: forests
+    volumes:
+      - ./forests:/usr/src/app
+    networks:
+      - voedselbos
+    working_dir: /usr/src/app
+    #node --watch werkt niet met wsl2 helaas.
+    #command: bash -c "npm install && npx prisma generate --no-hints && npx prisma migrate deploy && npm run dev"
+    command: bash -c "npm install && npx prisma generate --no-hints && npx prisma migrate deploy && npm install -g nodemon && npx nodemon -L"
+
+networks:
+  voedselbos:
+    driver: bridge
