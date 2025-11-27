@@ -1,0 +1,50 @@
+# Food Forest Informatie Platform — Backend
+
+## Overzicht
+Deze repository bevat de backend van het Food Forest Informatie Platform.
+De backend verzorgt data-beheer, API-endpoints, database-migraties en biedt de basis voor huidige en toekomstige microservices.
+Via de backend kan de frontend communiceren en data opslaan/opvragen (bijvoorbeeld over voedselbossen, sensordata, bos-statussen, etc.).
+
+## Doelen van de Backend  
+De backend is gemaakt voo de volgende doeleinden:
+
+- Bieden van een stabiele API-laag voor communicatie tussen frontend en dataopslag.
+- Beheren van database migraties / updates.
+- Ondersteunen van CRUD-operaties voor alle relevante datatypes (bijv. bossen, planten, user accounts etc.).
+- Ondersteunen van (toekomstige) microservice-architectuur om uitbreidbaarheid en onderhoud te versimpelen.
+- Zorgen voor gestructureerde code, zodat verdere functionaliteit (bijv. data-analyse) eenvoudig toegevoegd kan worden.
+
+## Huidige Structuur & Technische Opzet
+De backend maakt gebruik van:
+
+- Node.js (JavaScript)
+- REST / API-gateway-architectuur met microservices (t.b.d.)
+- Docker (met Dockerfile) en optioneel docker-compose (voor lokaal testen / ontwikkeling)
+
+## Installatie en Lokale Setup
+
+1. Clone de repository
+   ```bash
+   git clone <url-van-de-repo>
+   ```
+2. Ga naar de projectmap, installeer dependencies:
+   ```bash
+   npm install
+   ```
+3. (Optioneel) Als je Docker gebruikt: bouw en start containers:
+   ```bash
+   docker build -t foodforest-backend .
+   docker run -p <poort>:<poort> foodforest-backend
+   ```
+   of met docker-compose (als je `docker-compose.yml` gebruikt).
+4. De server / API-gateway zal starten op de aangegeven poort. Je kunt dan API-verzoeken sturen (GET, POST, PUT, DELETE, etc.) om data aan te maken, op te vragen of te wijzigen.
+
+## Functionaliteiten (vooralsnog / gepland)
+- Basis CRUD-functionaliteit voor bosdata, plantendata en statusinformatie
+- API-endpoints voor communicatie met de frontend
+- Gestructureerde codeopzet die schaalbaarheid en uitbreiding ondersteunt
+
+## Toekomst en Uitbreiding
+- Toevoegen van extra microservices met onafhankelijke taken (zoals sensordata en communicatie binnen de applicatie voor gebruikers)
+- Eventuele implementatie van authenticatie en autorisatie
+- Verbetering van beveiliging en validatie d.m.v. middleware
