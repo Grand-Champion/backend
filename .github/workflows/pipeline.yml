@@ -1,4 +1,4 @@
-name: ESLint
+name: ci/cd pipeline
 on: pull_request
 jobs:
   build:
