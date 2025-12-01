@@ -21,7 +21,7 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-const port = parseInt(process.env.PORT, 10) || 3012;
+const port = parseInt(process.env.FORESTS_PORT, 10) || 3012;
 
 app.listen(port, () => {
     console.log(`🍿 Express running → PORT ${port}`);
