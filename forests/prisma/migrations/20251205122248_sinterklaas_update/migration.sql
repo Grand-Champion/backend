@@ -59,8 +59,8 @@ CREATE TABLE "new_Plant" (
     "posX" REAL NOT NULL DEFAULT 0,
     "posY" REAL NOT NULL DEFAULT 0,
     "plantStage" TEXT,
-    "last_inspected" DATETIME,
-    "plant_health" TEXT,
+    "lastInspected" DATETIME,
+    "plantHealth" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deletedAt" DATETIME,
@@ -95,7 +95,7 @@ CREATE TABLE "new_Species" (
     "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deletedAt" DATETIME
 );
-INSERT INTO "new_Species" ("description", "harvestSeason", "id", "maintenance", "maxHumidity", "maxSoilMoisture", "maxSoilPH", "maxSunlight", "maxTemperature", "minHumidity", "minSoilMoisture", "minSoilPH", "minSunlight", "minTemperature", "name", "scientificName", "sunRequirement", "waterNeeds") SELECT "description", "harvestSeason", "id", "maintenance", "maxHumidity", "maxSoilMoisture", "maxSoilPH", "maxSunlight", "maxTemperature", "minHumidity", "minSoilMoisture", "minSoilPH", "minSunlight", "minTemperature", "name", "scientificName", "sunRequirement", "waterNeeds" FROM "Species";
+INSERT INTO "new_Species" ("description", "harvestSeason", "id", "maintenance", "maxHumidity", "maxSoilMoisture", "maxSoilPH", "maxSunlight", "maxTemperature", "minHumidity", "minSoilMoisture", "minSoilPH", "minSunlight", "minTemperature", "name", "scientificName", "sunRequirement", "waterNeeds", "type") SELECT "description", "harvestSeason", "id", "maintenance", "maxHumidity", "maxSoilMoisture", "maxSoilPH", "maxSunlight", "maxTemperature", "minHumidity", "minSoilMoisture", "minSoilPH", "minSunlight", "minTemperature", "name", "scientificName", "sunRequirement", "waterNeeds", "category" AS "type" FROM "Species";
 DROP TABLE "Species";
 ALTER TABLE "new_Species" RENAME TO "Species";
 CREATE TABLE "new_User" (

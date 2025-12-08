@@ -86,8 +86,8 @@ model Plant {
   posX              Float       @default(0)
   posY              Float       @default(0)
   plantStage        String?
-  last_inspected    DateTime?
-  plant_health      String?
+  lastInspected     DateTime?
+  plantHealth       String?
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @default(now()) @updatedAt
   deletedAt         DateTime?
