@@ -136,67 +136,92 @@ async function main() {
         }
     });
 
-    const rhubarb = await prisma.species.create({
+    const blueberry = await prisma.species.create({
         data: {
-            name: 'Rhubarb',
-            scientificName: 'Rheum rhabarbarum',
-            description: 'A large plant with edible stalks',
-            type: 'Plant',
-            harvestSeason: 'Spring',
-            sunRequirement: 'Full sun to partial shade',
-            waterNeeds: 'High',
-            maintenance: 'Low',
-            minTemperature: -15,
-            maxTemperature: 25,
+            name: 'Blueberry',
+            scientificName: 'Vaccinium corymbosum',
+            description: 'A shrub with sweet blue berries rich in antioxidants',
+            type: 'Shrub',
+            harvestSeason: 'Summer',
+            sunRequirement: 'Full sun',
+            waterNeeds: 'Medium',
+            maintenance: 'Medium',
+            minTemperature: -20,
+            maxTemperature: 30,
             minHumidity: 50,
             maxHumidity: 70,
-            minSoilPH: 6.0,
-            maxSoilPH: 7.0,
-            minSoilMoisture: 55,
-            maxSoilMoisture: 75,
-            minSunlight: 4,
-            maxSunlight: 8,
+            minSoilPH: 4.5,
+            maxSoilPH: 5.5,
+            minSoilMoisture: 50,
+            maxSoilMoisture: 70,
+            minSunlight: 6,
+            maxSunlight: 10,
         }
     });
 
     console.log(`✅ Created 6 species`);
 
-    // Maak nieuwe forests
-    const forest = await prisma.foodForest.create({
+    // Maak meerdere forests
+    const forest1 = await prisma.foodForest.create({
         data: {
             name: 'Amsterdam Food Forest',
             location: 'Amsterdam North',
             ownerId: user.id,
         }
     });
-    console.log(`✅ Created forest: ${forest.name}`);
+    console.log(`✅ Created forest: ${forest1.name}`);
 
-    // Link species aan forest
-    await prisma.foodForestSpecies.createMany({
-        data: [
-            { foodForestId: forest.id, speciesId: appleTree.id },
-            { foodForestId: forest.id, speciesId: pearTree.id },
-            { foodForestId: forest.id, speciesId: strawberry.id },
-            { foodForestId: forest.id, speciesId: raspberry.id },
-            { foodForestId: forest.id, speciesId: blackberry.id },
-            { foodForestId: forest.id, speciesId: rhubarb.id },
-        ]
+    const forest2 = await prisma.foodForest.create({
+        data: {
+            name: 'Rotterdam Urban Garden',
+            location: 'Rotterdam West',
+            ownerId: user.id,
+        }
     });
-    console.log(`✅ Linked species to forest`);
+    console.log(`✅ Created forest: ${forest2.name}`);
 
-    // Maakt random planten met factories
-    console.log(`🌱 Creating plants...`);
-    resetPositions();
-    const species = [appleTree, pearTree, strawberry, raspberry, blackberry, rhubarb];
-    
-    for (let i = 0; i < 10; i++) {
-        const randomSpecies = species[Math.floor(Math.random() * species.length)];
-        await prisma.plant.create({
-            data: createPlantFactory(forest.id, randomSpecies.id, randomSpecies)
+    const forest3 = await prisma.foodForest.create({
+        data: {
+            name: 'HZ Green Office',
+            location: 'Vlissingen',
+            ownerId: user.id,
+        }
+    });
+    console.log(`✅ Created forest: ${forest3.name}`);
+
+    const forests = [forest1, forest2, forest3];
+    const allSpecies = [appleTree, pearTree, strawberry, raspberry, blackberry, blueberry];
+
+    // Link species aan beide forests
+    for (const forest of forests) {
+        await prisma.foodForestSpecies.createMany({
+            data: [
+                { foodForestId: forest.id, speciesId: appleTree.id },
+                { foodForestId: forest.id, speciesId: pearTree.id },
+                { foodForestId: forest.id, speciesId: strawberry.id },
+                { foodForestId: forest.id, speciesId: raspberry.id },
+                { foodForestId: forest.id, speciesId: blackberry.id },
+                { foodForestId: forest.id, speciesId: blueberry.id },
+            ]
         });
     }
+    console.log(`✅ Linked species to all forests`);
+
+    // Maakt random planten voor elke forest
+    console.log(`🌱 Creating plants...`);
     
-    console.log(`✅ Created 10 plants with unique positions`);
+    for (const forest of forests) {
+        resetPositions(); // Reset posities voor elke nieuwe forest
+        
+        for (let i = 0; i < 10; i++) {
+            const randomSpecies = allSpecies[Math.floor(Math.random() * allSpecies.length)];
+            await prisma.plant.create({
+                data: createPlantFactory(forest.id, randomSpecies.id, randomSpecies)
+            });
+        }
+        console.log(`✅ Created 10 plants for ${forest.name}`);
+    }
+    
     console.log('🌳 Seeding finished!');
 }
 

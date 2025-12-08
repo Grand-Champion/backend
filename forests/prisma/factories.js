@@ -36,16 +36,23 @@ function createPlantFactory(forestId, speciesId, species) {
     const hasConditions = Math.random() > 0.4; // 60% kans op conditions (zodat we error meldingen kunnen testen in de frontend)
     const { posX, posY } = getUniquePosition();
     
+    // Genereer harvest prediction datum (1-6 maanden in de toekomst)
+    const monthsInFuture = Math.floor(Math.random() * 6) + 1;
+    const harvestDate = new Date();
+    harvestDate.setMonth(harvestDate.getMonth() + monthsInFuture);
+    const harvestPrediction = harvestDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    
     const plantData = {
         foodForestId: forestId,
         speciesId: speciesId,
         plantStage: randomChoice(PLANT_STAGES),
         plantHealth: randomChoice(HEALTH_STATUSES),
+        harvestPrediction: harvestPrediction,
         posX,
         posY,
-        height: species.type === 'Boom' 
+        height: species.type === 'Tree' 
             ? `${randomFloat(1.5, 5.0, 1)}m`
-            : species.type === 'Struik'
+            : species.type === 'Shrub'
             ? `${randomFloat(0.5, 2.0, 1)}m`
             : `${randomFloat(0.2, 0.6, 2)}m`,
     };
