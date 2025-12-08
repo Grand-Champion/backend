@@ -11,23 +11,44 @@ datasource db {
 
 model User {
   id          Int          @id @default(autoincrement())
+  email       String
+  password    String
   foodForests FoodForest[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now()) @updatedAt
+  deletedAt   DateTime?
 }
 
 model FoodForest {
-  id       Int     @id @default(autoincrement())
-  name     String
-  location String
-  owner    User?   @relation(fields: [ownerId], references: [id])
-  ownerId  Int?
-  plants   Plant[]
+  id        Int                 @id @default(autoincrement())
+  name      String
+  location  String
+  image     String?
+  owner     User?               @relation(fields: [ownerId], references: [id])
+  ownerId   Int?
+  plants    Plant[]
+  species   FoodForestSpecies[]
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model FoodForestSpecies {
+  foodForest   FoodForest @relation(fields: [foodForestId], references: [id])
+  foodForestId Int
+  species      Species    @relation(fields: [speciesId], references: [id])
+  speciesId    Int
+
+  plants Plant[]
+
+  @@id([foodForestId, speciesId])
 }
 
 model Species {
-  id              Int     @id @default(autoincrement())
+  id              Int                 @id @default(autoincrement())
   name            String
   description     String?
-  category        String?
+  type            String?
   scientificName  String?
   harvestSeason   String?
   sunRequirement  String?
@@ -44,6 +65,11 @@ model Species {
   maxSoilMoisture Float?
   minSunlight     Float?
   maxSunlight     Float?
+  image           String?
+  foodForests     FoodForestSpecies[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @default(now()) @updatedAt
+  deletedAt       DateTime?
 }
 
 model Plant {
@@ -59,15 +85,25 @@ model Plant {
   image             String?
   posX              Float       @default(0)
   posY              Float       @default(0)
+  plantStage        String?
+  lastInspected     DateTime?
+  plantHealth       String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @default(now()) @updatedAt
+  deletedAt         DateTime?
+
+  foodForestSpecies FoodForestSpecies @relation(fields: [foodForestId, speciesId], references: [foodForestId, speciesId])
 }
 
 model Conditions {
-  plant        Plant   @relation(fields: [plantId], references: [id])
-  plantId      Int     @id
+  plant        Plant    @relation(fields: [plantId], references: [id])
+  plantId      Int      @id
   temperature  Float?
   humidity     Float?
   soilPH       Float?
   soilMoisture Float?
   sunlight     Float?
   status       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 }

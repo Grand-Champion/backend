@@ -18,7 +18,7 @@ module.exports = class SpeciesController {
      * @param {Response} res 
      */
     static async getSpeciesMany (req, res) {
-        const data = await prisma.species.findMany();
+        const data = await prisma.species.findMany({ where: { deletedAt: null }});
         const response = {
             data,
             meta: {
@@ -36,7 +36,7 @@ module.exports = class SpeciesController {
      */
     static async getSpecies (req, res) {
         const id = Validation.int(req.params.id, "id", true);
-        const data = await prisma.species.findUnique({ where: {id} });
+        const data = await prisma.species.findUnique({ where: {id, deletedAt: null }});
         if(!data){
             throw {status: 404, message: "species not found"};
         }
@@ -59,7 +59,7 @@ module.exports = class SpeciesController {
             req.body, 
             [
                 "description",
-                "category",
+                "type",
                 "scientificName",
                 "harvestSeason",
                 "sunRequirement",
@@ -75,7 +75,8 @@ module.exports = class SpeciesController {
                 "minSoilMoisture",
                 "maxSoilMoisture",
                 "minSunlight",
-                "maxSunlight"
+                "maxSunlight",
+                "image"
             ], 
             ["name"]
         );
@@ -96,7 +97,7 @@ module.exports = class SpeciesController {
         const data = Validation.body(req.body, [
             "description", 
             "name", 
-            "category",
+            "type",
             "scientificName",
             "harvestSeason",
             "sunRequirement",
@@ -112,10 +113,12 @@ module.exports = class SpeciesController {
             "minSoilMoisture",
             "maxSoilMoisture",
             "minSunlight",
-            "maxSunlight"]);
+            "maxSunlight",
+            "image"
+        ]);
         const id = Validation.int(req.params.id, "id", true);
 
-        const species = await prisma.species.findUnique({where: {id}});
+        const species = await prisma.species.findUnique({where: {id, deletedAt: null }});
         if(!species){
             throw {status: 404, message: "species not found"};
         }
@@ -136,12 +139,38 @@ module.exports = class SpeciesController {
     static async deleteSpecies (req, res) {
         const id = Validation.int(req.params.id, "id", true);
 
-        const species = await prisma.species.findUnique({where: {id}});
+        const species = await prisma.species.findUnique({where: {id, deletedAt: null }});
         if(!species){
             throw {status: 404, message: "species not found"};
         }
 
-        const result = await prisma.species.delete({where: {id}});
+        const result = await prisma.species.update({where: {id}, data: {deletedAt: new Date()}});
         res.status(200).send(`species with id ${result.id} deleted`);
+    }
+
+    /**
+     * Vraagt alle forests met de species op
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    static async getSpeciesFoodForests (req, res) {
+        const speciesId = Validation.int(req.params.id, "id", true);
+        const species = await prisma.species.findUnique({where: {id: speciesId, deletedAt: null }});
+        if(!species){
+            throw {status: 404, message: "species not found"};
+        }
+        const foodForestSpecies = await prisma.foodForestSpecies.findMany({where: {speciesId}, include: {foodForest: true}});
+        const data = [];
+        for (const foodForestSpeciesRelation of foodForestSpecies){
+            data.push(foodForestSpeciesRelation.foodForest);
+        }
+        const response = {
+            data,
+            meta: {
+                url: req.originalUrl,
+                count: data.length
+            }
+        }
+        res.status(200).json(response);
     }
 }
