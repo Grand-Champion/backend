@@ -33,7 +33,7 @@ function resetPositions() {
 }
 
 function createPlantFactory(forestId, speciesId, species) {
-    const hasConditions = Math.random() > 0.4; // 60% kans op conditions (zodat we error meldingen kunnen testen in de frontend)
+    const hasConditions = Math.random() > 0.2; // 80% kans op conditions (zodat we error meldingen kunnen testen in de frontend)
     const { posX, posY } = getUniquePosition();
     
     // Genereer harvest prediction datum (1-6 maanden in de toekomst)
