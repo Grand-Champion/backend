@@ -8,6 +8,9 @@ const adapter = new PrismaLibSql({
 
 const prisma = new PrismaClient({ adapter });
 
+/**
+ * seeding function
+ */
 async function main() {
     console.log('🌱 Start seeding...');
 
@@ -41,6 +44,7 @@ async function main() {
             maxSoilMoisture: 70,
             minSunlight: 6,
             maxSunlight: 12,
+            image: 'https://upload.wikimedia.org/wikipedia/commons/1/19/Tree_with_red_apples_in_Barkedal_4.jpg',
         }
     });
 
@@ -64,6 +68,7 @@ async function main() {
             maxSoilMoisture: 75,
             minSunlight: 6,
             maxSunlight: 10,
+            image: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Pear_in_tree_0465.jpg',
         }
     });
 
@@ -87,6 +92,7 @@ async function main() {
             maxSoilMoisture: 80,
             minSunlight: 6,
             maxSunlight: 10,
+            image: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Fragaria_vesca_LC0389.jpg',
         }
     });
 
@@ -110,6 +116,7 @@ async function main() {
             maxSoilMoisture: 70,
             minSunlight: 5,
             maxSunlight: 10,
+            image: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Framboise_Margy_3.jpg',
         }
     });
 
@@ -133,6 +140,7 @@ async function main() {
             maxSoilMoisture: 60,
             minSunlight: 4,
             maxSunlight: 10,
+            image: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/BlackberryBush.jpg',
         }
     });
 
@@ -156,6 +164,7 @@ async function main() {
             maxSoilMoisture: 70,
             minSunlight: 6,
             maxSunlight: 10,
+            image: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Rochester_blueberries.JPG',
         }
     });
 
@@ -192,7 +201,7 @@ async function main() {
     const forests = [forest1, forest2, forest3];
     const allSpecies = [appleTree, pearTree, strawberry, raspberry, blackberry, blueberry];
 
-    // Link species aan beide forests
+    // Link species aan alle forests
     for (const forest of forests) {
         await prisma.foodForestSpecies.createMany({
             data: [
@@ -213,7 +222,7 @@ async function main() {
     for (const forest of forests) {
         resetPositions(); // Reset posities voor elke nieuwe forest
         
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 10; i += 1) {
             const randomSpecies = allSpecies[Math.floor(Math.random() * allSpecies.length)];
             await prisma.plant.create({
                 data: createPlantFactory(forest.id, randomSpecies.id, randomSpecies)
