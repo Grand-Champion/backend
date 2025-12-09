@@ -101,7 +101,7 @@ function createPlantFactory(forestId, speciesId, species) {
     }
     
     const plantData = {
-        foodForestId,
+        foodForestId: forestId,
         speciesId,
         stage: randomChoice(PLANT_STAGES),
         plantStage: randomChoice(PLANT_STAGES),
