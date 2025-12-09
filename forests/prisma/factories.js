@@ -42,8 +42,8 @@ const usedPositions = new Set();
 function getUniquePosition() {
     let attempts = 0;
     while (attempts < 100) {
-        const posX = randomFloat(5, 45, 1);
-        const posY = randomFloat(5, 45, 1);
+        const posX = randomFloat(0, 100, 1);
+        const posY = randomFloat(0, 100, 1);
         const key = `${posX},${posY}`;
         
         if (!usedPositions.has(key)) {
