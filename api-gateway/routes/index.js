@@ -4,7 +4,7 @@ const { createProxyMiddleware, fixRequestBody } = require("http-proxy-middleware
 const router = Express.Router();
 
 const forests_port = parseInt(process.env.FORESTS_PORT, 10) || 3012;
-const forests_ip = process.env.FORESTS_IP || "localhost";
+const forests_ip = process.env.FORESTS_IP || "forests";
 
 const forestProxyMiddleware = createProxyMiddleware({
     target: `http://${forests_ip}:${forests_port}/`,
