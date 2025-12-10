@@ -37,33 +37,6 @@ module.exports = class MessageController {
     };
 
     /**
-     * Stuurt een specifieke message terug
-     * @param {Request} req 
-     * @param {Response} res 
-     */
-    static async getMessage (req, res) {
-        const userId = Validation.int(req.query.userId, "userId");
-        const foodForestId = Validation.int(req.query.foodForestId, "foodForestId");
-        const createdAt = new Date(req.query.createdAt);
-
-        const message = await prisma.message.findUnique({
-            where: {
-                userId_foodForestId_createdAt: {
-                    userId,
-                    foodForestId,
-                    createdAt,
-                },
-            },
-        });
-
-        if(!message) {
-            return res.status(404).json({ error: "Message not found"});
-        }
-
-        res.status(200).json({ message });
-    };
-
-    /**
      * Maakt een nieuwe message aan
      * @param {Request} req 
      * @param {Response} res 
