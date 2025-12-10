@@ -78,9 +78,6 @@ module.exports = class PlantController {
         const result = await prisma.plant.update({where: {id}, data: {
             deletedAt: new Date()
         }});
-        if(!await prisma.plant.findFirst({where: {foodForestId: result.foodForestId, speciesId: result.speciesId}})){
-            prisma.foodForestSpecies.deleteUnique({where: {foodForestId: result.foodForestId, speciesId: result.speciesId}});
-        }
 
         res.status(200).send(`plant with id ${result.id} deleted`);
     }
@@ -119,24 +116,6 @@ module.exports = class PlantController {
                 }, 
                 ...data
             }
-        });
-
-        await prisma.foodForestSpecies.upsert({
-            where: {
-                foodForestId_speciesId: {
-                    foodForestId: forestId,
-                    speciesId
-                }
-            },
-            create:{
-                foodForest: {
-                    connect: {id: forestId}
-                },
-                species: {
-                    connect: {id: speciesId}
-                }
-            },
-            update: {}
         });
 
         res.status(201).send(`plant created with id ${plant.id}`);

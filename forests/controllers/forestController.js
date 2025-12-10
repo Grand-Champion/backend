@@ -136,13 +136,32 @@ module.exports = class ForestController {
         if(!forest){
             throw {status: 404, message: "forest not found"};
         }
-        const foodForestSpecies = await prisma.foodForestSpecies.findMany({where: {foodForestId}, include: {species: true}});
+        /*const foodForestSpecies = await prisma.foodForestSpecies.findMany({where: {foodForestId}, include: {species: true}});
         const data = [];
         for (const foodForestSpeciesRelation of foodForestSpecies){
             data.push(foodForestSpeciesRelation.species);
-        }
+        }*/
+        
+        
+        const data = await prisma.foodForest.findUnique({
+            where: {
+                id: foodForestId, deletedAt: null
+            },
+            select: {
+                plants: {
+                    select: {
+                        species: true
+                    }
+                }
+            }
+        });
+        const species = data.plants.map((v)=>{
+            return v.species
+        });
+
+
         const response = {
-            data,
+            data:species,
             meta: {
                 url: req.originalUrl,
                 count: data.length
