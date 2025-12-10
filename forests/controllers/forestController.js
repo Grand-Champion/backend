@@ -48,7 +48,11 @@ module.exports = class ForestController {
             include: {
                 plants: {
                     include: {
-                        conditions: true
+                        conditions: {
+                            orderBy: {
+                                createdAt: "desc"
+                            }
+                        }
                     },
                     where: {
                         deletedAt: null
@@ -136,13 +140,31 @@ module.exports = class ForestController {
         if(!forest){
             throw {status: 404, message: "forest not found"};
         }
-        const foodForestSpecies = await prisma.foodForestSpecies.findMany({where: {foodForestId}, include: {species: true}});
-        const data = [];
-        for (const foodForestSpeciesRelation of foodForestSpecies){
-            data.push(foodForestSpeciesRelation.species);
-        }
+        
+        const data = await prisma.foodForest.findUnique({
+            where: {
+                id: foodForestId, deletedAt: null
+            },
+            select: {
+                plants: {
+                    select: {
+                        species: true
+                    }
+                }
+            }
+        });
+        const hadSpecies = new Set();
+        const species = data.plants.map((v)=>{
+            if(!hadSpecies.has(v.species.id)) {
+                hadSpecies.add(v.species.id);
+                return v.species;
+            }
+            return undefined;
+        }).filter(v=>v);
+
+
         const response = {
-            data,
+            data: species,
             meta: {
                 url: req.originalUrl,
                 count: data.length

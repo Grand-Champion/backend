@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { PrismaClient } = require('@prisma/client');
 const { PrismaLibSql } = require('@prisma/adapter-libsql');
 const { createPlantFactory, resetPositions } = require('./factories');
@@ -201,20 +202,6 @@ async function main() {
     const forests = [forest1, forest2, forest3];
     const allSpecies = [appleTree, pearTree, strawberry, raspberry, blackberry, blueberry];
 
-    // Link species aan alle forests
-    for (const forest of forests) {
-        await prisma.foodForestSpecies.createMany({
-            data: [
-                { foodForestId: forest.id, speciesId: appleTree.id },
-                { foodForestId: forest.id, speciesId: pearTree.id },
-                { foodForestId: forest.id, speciesId: strawberry.id },
-                { foodForestId: forest.id, speciesId: raspberry.id },
-                { foodForestId: forest.id, speciesId: blackberry.id },
-                { foodForestId: forest.id, speciesId: blueberry.id },
-            ]
-        });
-    }
-    console.log(`✅ Linked species to all forests`);
 
     // Maakt random planten voor elke forest
     console.log(`🌱 Creating plants...`);

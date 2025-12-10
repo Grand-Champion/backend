@@ -11,7 +11,7 @@ datasource db {
 
 model User {
   id          Int          @id @default(autoincrement())
-  email       String
+  email       String       @unique
   password    String
   foodForests FoodForest[]
   createdAt   DateTime     @default(now())
@@ -27,21 +27,9 @@ model FoodForest {
   owner     User?               @relation(fields: [ownerId], references: [id])
   ownerId   Int?
   plants    Plant[]
-  species   FoodForestSpecies[]
   createdAt DateTime            @default(now())
   updatedAt DateTime            @default(now()) @updatedAt
   deletedAt DateTime?
-}
-
-model FoodForestSpecies {
-  foodForest   FoodForest @relation(fields: [foodForestId], references: [id])
-  foodForestId Int
-  species      Species    @relation(fields: [speciesId], references: [id])
-  speciesId    Int
-
-  plants Plant[]
-
-  @@id([foodForestId, speciesId])
 }
 
 model Species {
@@ -66,7 +54,6 @@ model Species {
   minSunlight     Float?
   maxSunlight     Float?
   image           String?
-  foodForests     FoodForestSpecies[]
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @default(now()) @updatedAt
   deletedAt       DateTime?
@@ -80,7 +67,7 @@ model Plant {
   speciesId         Int
   foodForest        FoodForest  @relation(fields: [foodForestId], references: [id])
   foodForestId      Int
-  conditions        Conditions?
+  conditions        Conditions[]
   height            String?
   image             String?
   posX              Float       @default(0)
@@ -91,13 +78,11 @@ model Plant {
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @default(now()) @updatedAt
   deletedAt         DateTime?
-
-  foodForestSpecies FoodForestSpecies @relation(fields: [foodForestId, speciesId], references: [foodForestId, speciesId])
 }
 
 model Conditions {
   plant        Plant    @relation(fields: [plantId], references: [id])
-  plantId      Int      @id
+  plantId      Int
   temperature  Float?
   humidity     Float?
   soilPH       Float?
@@ -105,5 +90,6 @@ model Conditions {
   sunlight     Float?
   status       String?
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now()) @updatedAt
+  
+  @@id([createdAt, plantId])
 }
