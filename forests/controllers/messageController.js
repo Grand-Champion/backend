@@ -66,17 +66,16 @@ module.exports = class MessageController {
             }
         };
         res.json(response);
-		
     };
 
     /**
-     * Maakt een nieuwe forest aan
+     * Maakt een nieuwe message aan
      * @param {Request} req 
      * @param {Response} res 
      */
     static async createMessage (req, res) {
         const data = Validation.body(req.body, ["userId", "foodForestId"], ["Message", "Image"]);
-        //TODO: Deze valideren (dat de owner ook echt bestaat)
+        //TODO: Deze valideren (dat de user ook echt bestaat)
         data.userId = Validation.int(data.userId, "userId");
         data.foodForest.Id = Validation.int(data.foodForest.Id, "foodForest.id");
         const message = await prisma.message.create({
@@ -92,7 +91,7 @@ module.exports = class MessageController {
      */
     static async updateMessage (req, res) {
         const data = Validation.body(req.body, ["userId", "foodForestId"], ["Message", "Image"]);
-        //TODO: Deze valideren (dat de owner ook echt bestaat)
+        //TODO: Deze valideren (dat de user ook echt bestaat)
         data.userId = Validation.int(data.userId, "userId");
         data.foodForest.Id = Validation.int(data.foodForest.Id, "foodForest.id");
         const id = Validation.int(req.params.id, "id", true);
