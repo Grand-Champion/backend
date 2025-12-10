@@ -140,12 +140,6 @@ module.exports = class ForestController {
         if(!forest){
             throw {status: 404, message: "forest not found"};
         }
-        /*const foodForestSpecies = await prisma.foodForestSpecies.findMany({where: {foodForestId}, include: {species: true}});
-        const data = [];
-        for (const foodForestSpeciesRelation of foodForestSpecies){
-            data.push(foodForestSpeciesRelation.species);
-        }*/
-        
         
         const data = await prisma.foodForest.findUnique({
             where: {
