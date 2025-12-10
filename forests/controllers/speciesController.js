@@ -171,9 +171,14 @@ module.exports = class SpeciesController {
                 }
             }
         });
+        const hadForests = new Set();
         const forests = data.plants.map((v)=>{
-            return v.foodForest
-        });
+            if(!hadForests.has(v.foodForest.id)) {
+                hadForests.add(v.foodForest.id);
+                return v.foodForest;
+            }
+            return undefined;
+        }).filter(v=>v);
         const response = {
             data: forests,
             meta: {

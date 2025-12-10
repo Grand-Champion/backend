@@ -153,13 +153,18 @@ module.exports = class ForestController {
                 }
             }
         });
+        const hadSpecies = new Set();
         const species = data.plants.map((v)=>{
-            return v.species
-        });
+            if(!hadSpecies.has(v.species.id)) {
+                hadSpecies.add(v.species.id);
+                return v.species;
+            }
+            return undefined;
+        }).filter(v=>v);
 
 
         const response = {
-            data:species,
+            data: species,
             meta: {
                 url: req.originalUrl,
                 count: data.length
