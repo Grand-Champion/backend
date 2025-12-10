@@ -49,7 +49,11 @@ module.exports = class PlantController {
             where: {id, deletedAt: null},
             include: {
                 species: true,
-                conditions: true
+                conditions: {
+                    orderBy: {
+                        createdAt: "desc"
+                    }
+                }
             }
         });
         if(!data){

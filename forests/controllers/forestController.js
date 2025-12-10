@@ -48,7 +48,11 @@ module.exports = class ForestController {
             include: {
                 plants: {
                     include: {
-                        conditions: true
+                        conditions: {
+                            orderBy: {
+                                createdAt: "desc"
+                            }
+                        }
                     },
                     where: {
                         deletedAt: null
