@@ -119,5 +119,5 @@ model Messages {
   message      String
   image        String?
 
-  @@id([userId, foodForestId])
+  @@id([userId, foodForestId, createdAt])
 }
