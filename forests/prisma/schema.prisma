@@ -107,3 +107,13 @@ model Conditions {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }
+
+model Messages {
+  user        User        @relation(fields: [userId], references: [id])
+  userId      Int         @id
+  foodForest  FoodForest  @relation(fields: [foodForestId], references: [id])
+  foodForestId  FoodForest  @id
+  createdAt   DateTime @default(now())
+  message     String
+  image       String?
+}
