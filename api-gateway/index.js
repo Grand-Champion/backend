@@ -1,9 +1,10 @@
 const Express = require("express");
-require('dotenv').config()
-const IndexRouter = require("./routes/index.js")
+require('dotenv').config();
+const IndexRouter = require("./routes/index.js");
+const cors = require("cors");
 
 const app = Express();
-
+app.use(cors());
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
