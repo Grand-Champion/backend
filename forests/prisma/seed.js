@@ -177,6 +177,7 @@ async function main() {
             name: 'Amsterdam Food Forest',
             location: 'Amsterdam North',
             ownerId: user.id,
+            image: '/images/food-forest-map.jpg'
         }
     });
     console.log(`✅ Created forest: ${forest1.name}`);
