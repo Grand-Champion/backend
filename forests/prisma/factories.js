@@ -30,7 +30,6 @@ function randomInt(min, max) {
 
 const PLANT_STAGES = ['Young', 'Growing', 'Blooming', 'Mature', 'Fruit-bearing'];
 const HEALTH_STATUSES = ['Excellent', 'Good', 'Fair'];
-const CONDITION_STATUSES = ['Optimal', 'Good', 'Attention required'];
 
 // zorgt ervoor dat planten niet dezelfde x en y cordinaten krijgen
 const usedPositions = new Set();
@@ -122,7 +121,6 @@ function createPlantFactory(forestId, speciesId, species) {
                 soilPH: randomFloat(species.minSoilPH || 6.0, species.maxSoilPH || 7.0, 1),
                 soilMoisture: randomFloat(species.minSoilMoisture || 50, species.maxSoilMoisture || 70, 1),
                 sunlight: randomFloat(species.minSunlight || 6, species.maxSunlight || 10, 1),
-                status: randomChoice(CONDITION_STATUSES),
             }
         };
     }

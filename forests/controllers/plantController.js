@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const { PrismaLibSql } = require('@prisma/adapter-libsql');
 
 const Validation = require("../lib/validation");
+const { calculateConditionStatus } = require("../lib/set-status.js");
 
 const adapter = new PrismaLibSql({
     url: "file:./file.db"
@@ -55,6 +56,12 @@ module.exports = class PlantController {
         if(!data){
             throw {status: 404, message: "plant not found"};
         }
+        
+        // Bereken status
+        if (data.conditions && data.species) {
+            data.conditions.status = calculateConditionStatus(data.conditions, data.species);
+        }
+        
         const response = {
             data,
             meta: {

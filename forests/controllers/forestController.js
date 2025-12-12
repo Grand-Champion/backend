@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const { PrismaLibSql } = require('@prisma/adapter-libsql');
 
 const Validation = require("../lib/validation");
+const { calculateConditionStatus } = require("../lib/set-status.js");
 
 const adapter = new PrismaLibSql({
     url: "file:./file.db"
@@ -48,7 +49,8 @@ module.exports = class ForestController {
             include: {
                 plants: {
                     include: {
-                        conditions: true
+                        conditions: true,
+                        species: true // Anders kan status niet berekend worden
                     },
                     where: {
                         deletedAt: null
@@ -59,6 +61,16 @@ module.exports = class ForestController {
         if(!data){
             throw {status: 404, message: "forest not found"};
         }
+
+        // Bereken status voor alle planten
+        if (data.plants) {
+            data.plants.forEach(plant => {
+                if (plant.conditions && plant.species) {
+                    plant.conditions.status = calculateConditionStatus(plant.conditions, plant.species);
+                }
+            });
+        }
+
         const response = {
             data,
             meta: {
