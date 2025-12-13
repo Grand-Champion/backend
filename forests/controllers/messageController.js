@@ -18,7 +18,7 @@ module.exports = class MessageController {
      * @param {Response} res
      */
     static async getMessages(req, res) {
-        const data = await prisma.message.findMany({
+        const data = await prisma.messages.findMany({
             where: {
                 deletedAt: null
             },
@@ -84,7 +84,7 @@ module.exports = class MessageController {
             throw err;
         }
 
-        const message = await prisma.message.findUnique({
+        const message = await prisma.messages.findUnique({
             where: {
                 userId_foodForestId_createdAt: {
                     userId,
@@ -107,7 +107,7 @@ module.exports = class MessageController {
             throw err;
         }
 
-        const updated = await prisma.message.update({
+        const updated = await prisma.messages.update({
             where: {
                 userId_foodForestId_createdAt: {
                     userId,
@@ -139,7 +139,7 @@ module.exports = class MessageController {
         const foodForestId = Validation.int(req.params.foodForestId, "foodForestId");
         const createdAt = new Date(req.params.createdAt);
 
-        const message = await prisma.message.findUnique({
+        const message = await prisma.messages.findUnique({
             where: {
                 userId_foodForestId_createdAt: {
                     userId,
@@ -155,7 +155,7 @@ module.exports = class MessageController {
             throw err;
         }
 
-        const result = await prisma.message.update({
+        const result = await prisma.messages.update({
             where: {
                 userId_foodForestId_createdAt: {
                     userId,
