@@ -66,13 +66,20 @@ module.exports = class MessageController {
      * @param {Response} res 
      */
     static async updateMessage (req, res) {
-        const data = Validation.body(req.body, ["userId", "foodForestId"], ["Message", "Image"]);
-        data.foodForest.Id = Validation.int(data.foodForest.Id, "foodForest.id");
+        const data = Validation.body(
+            req.body,
+            ["message", "image"],
+            ["userId", "foodForestId", "createdAt"]);
+        
         //TODO: Deze valideren (dat de user ook echt bestaat)
-        const userId = Validation.int(req.body.userId, "userId");
+        const userId = Validation.int(data.userId, "userId");
         //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
-        const foodForestId = Validation.int(req.body.foodForestId, "foodForestId");
-        const createdAt = new Date(req.body.createdAt);
+        const foodForestId = Validation.int(data.foodForestId, "foodForestId");
+        //TODO: Deze valideren  (of de createdAt goed is)
+        const createdAt = new Date(data.createdAt);
+        if (isNaN(createdAt.getTime())) {
+            return res.status(400).json({ error: "Invalid createdAt"});
+        }
 
         const message = await prisma.message.findUnique({
             where: {
@@ -88,11 +95,9 @@ module.exports = class MessageController {
             return res.status(404).json({ error: "Message not found" });
         }
 
-        const updateData = {};
-        if (data.message !== undefined) updateData.message = data.message;
-        if (data.image !== undefined) updateData.image = data.image;
+        const updateData = Validation.body(data, ["message", "image"]);
 
-        if (Object.keys(updateData.length) === 0) {
+        if (Object.keys(updateData).length === 0) {
             return res.status(400).json({ error: "No fields provided to update"});
         }
 
