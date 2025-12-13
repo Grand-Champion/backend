@@ -42,12 +42,12 @@ module.exports = class MessageController {
      * @param {Response} res 
      */
     static async createMessage(req, res) {
-        const data = Validation.body(req.body, ["userId", "foodForestId"], ["Message", "Image"]);
+        const data = Validation.body(req.body, ["userId", "foodForestId"], ["message", "image"]);
         //TODO: Deze valideren (dat de user ook echt bestaat)
         data.userId = Validation.int(data.userId, "userId");
         //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
-        data.foodForest.Id = Validation.int(data.foodForest.Id, "foodForest.id");
-        const message = await prisma.message.create({
+        data.foodForestId = Validation.int(data.foodForestId, "foodForestId");
+        const message = await prisma.messages.create({
             data,
         });
         res.status(201).json({
