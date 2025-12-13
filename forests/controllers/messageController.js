@@ -66,75 +66,68 @@ module.exports = class MessageController {
      * @param {Response} res 
      */
     static async updateMessage(req, res) {
-        try {
-            const data = Validation.body(
-                req.body,
-                ["message", "image"],
-                ["userId", "foodForestId", "createdAt"]
-            );
+        const data = Validation.body(
+            req.body,
+            ["message", "image"],
+            ["userId", "foodForestId", "createdAt"]
+        );
 
-            //TODO: Deze valideren (dat de user ook echt bestaat)
-            const userId = Validation.int(data.userId, "userId");
-            //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
-            const foodForestId = Validation.int(data.foodForestId, "foodForestId");
-            //TODO: Deze valideren  (of de createdAt goed is)
-            const createdAt = new Date(data.createdAt);
-            if (isNaN(createdAt.getTime())) {
-                const err = new Error("Invalid createdAt");
-                err.status = 400;
-                throw err;
-            }
-
-            const message = await prisma.message.findUnique({
-                where: {
-                    userId_foodForestId_createdAt: {
-                        userId,
-                        foodForestId,
-                        createdAt,
-                    },
-                },
-            });
-
-            if (!message) {
-                const err = new Error("Message not found");
-                err.status = 404;
-                throw err;
-            }
-
-            const updateData = Validation.body(data, ["message", "image"]);
-            if (Object.keys(updateData).length === 0) {
-                const err = new Error("No fields provided to update");
-                err.status = 400;
-                throw err;
-            }
-
-            const updated = await prisma.message.update({
-                where: {
-                    userId_foodForestId_createdAt: {
-                        userId,
-                        foodForestId,
-                        createdAt,
-                    },
-                },
-                data: updateData,
-            });
-
-            res.status(200).json({
-                message: "Message updated successfully",
-                key: {
-                    userId: message.userId,
-                    foodForestId: message.foodForestId,
-                    createdAt: message.createdAt,
-                },
-                data: updated,
-            });
-        } catch (err) {
-            if (!err.status) {
-                err.status = 500;
-            } 
-            next(err);
+        //TODO: Deze valideren (dat de user ook echt bestaat)
+        const userId = Validation.int(data.userId, "userId");
+        //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
+        const foodForestId = Validation.int(data.foodForestId, "foodForestId");
+        //TODO: Deze valideren  (of de createdAt goed is)
+        const createdAt = new Date(data.createdAt);
+        if (isNaN(createdAt.getTime())) {
+            const err = new Error("Invalid createdAt");
+            err.status = 400;
+            throw err;
         }
-    }
+
+        const message = await prisma.message.findUnique({
+            where: {
+                userId_foodForestId_createdAt: {
+                    userId,
+                    foodForestId,
+                    createdAt,
+                },
+            },
+        });
+
+        if (!message) {
+            const err = new Error("Message not found");
+            err.status = 404;
+            throw err;
+        }
+
+        const updateData = Validation.body(data, ["message", "image"]);
+        if (Object.keys(updateData).length === 0) {
+            const err = new Error("No fields provided to update");
+            err.status = 400;
+            throw err;
+        }
+
+        const updated = await prisma.message.update({
+            where: {
+                userId_foodForestId_createdAt: {
+                    userId,
+                    foodForestId,
+                    createdAt,
+                },
+            },
+            data: updateData,
+        });
+
+        res.status(200).json({
+            message: "Message updated successfully",
+            key: {
+                userId: message.userId,
+                foodForestId: message.foodForestId,
+                createdAt: message.createdAt,
+            },
+            data: updated,
+        });
+    } 
 
     /**
      * Verwijdert een message
@@ -142,52 +135,45 @@ module.exports = class MessageController {
      * @param {Response} res 
      */
     static async deleteMessage(req, res) {
-        try {
-            const userId = Validation.int(req.params.userId, "userId");
-            const foodForestId = Validation.int(req.params.foodForestId, "foodForestId");
-            const createdAt = new Date(req.params.createdAt);
+        const userId = Validation.int(req.params.userId, "userId");
+        const foodForestId = Validation.int(req.params.foodForestId, "foodForestId");
+        const createdAt = new Date(req.params.createdAt);
 
-            const message = await prisma.message.findUnique({
-                where: {
-                    userId_foodForestId_createdAt: {
-                        userId,
-                        foodForestId,
-                        createdAt,
-                    },
+        const message = await prisma.message.findUnique({
+            where: {
+                userId_foodForestId_createdAt: {
+                    userId,
+                    foodForestId,
+                    createdAt,
                 },
-            });
+            },
+        });
 
-            if (!message || message.deletedAt) {
-                const err = new Error("Message not found");
-                err.status = 404;
-                throw err;
-            }
-
-            const result = await prisma.message.update({
-                where: {
-                    userId_foodForestId_createdAt: {
-                        userId,
-                        foodForestId,
-                        createdAt,
-                    },
-                },
-                data: {
-                    deletedAt: new Date()
-                }
-            });
-            res.status(200).json({
-                message: "Message deleted successfully",
-                key: {
-                    userId: result.userId,
-                    foodForestId: result.foodForestId,
-                    createdAt: result.createdAt,
-                },
-            });
-        } catch (err) {
-            if (!err.status) {
-                err.status = 500;
-            } 
-            next(err);
+        if (!message || message.deletedAt) {
+            const err = new Error("Message not found");
+            err.status = 404;
+            throw err;
         }
-    }
+
+        const result = await prisma.message.update({
+            where: {
+                userId_foodForestId_createdAt: {
+                    userId,
+                    foodForestId,
+                    createdAt,
+                },
+            },
+            data: {
+                deletedAt: new Date()
+            }
+        });
+        res.status(200).json({
+            message: "Message deleted successfully",
+            key: {
+                userId: result.userId,
+                foodForestId: result.foodForestId,
+                createdAt: result.createdAt,
+            },
+        });
+    } 
 }
