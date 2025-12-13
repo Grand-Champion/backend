@@ -129,7 +129,9 @@ module.exports = class MessageController {
                 data: updated,
             });
         } catch (err) {
-            if (!err.status) err.status = 500;
+            if (!err.status) {
+                err.status = 500;
+            } 
             next(err);
         }
     }
@@ -182,7 +184,9 @@ module.exports = class MessageController {
                 },
             });
         } catch (err) {
-            if (!err.status) err.status = 500;
+            if (!err.status) {
+                err.status = 500;
+            } 
             next(err);
         }
     }
