@@ -42,7 +42,7 @@ module.exports = class MessageController {
      * @param {Response} res 
      */
     static async createMessage(req, res) {
-        const data = Validation.body(req.body, ["userId", "foodForestId"], ["message", "image"]);
+        const data = Validation.body(req.body, ["message", "image"], ["userId", "foodForestId"]);
         //TODO: Deze valideren (dat de user ook echt bestaat)
         data.userId = Validation.int(data.userId, "userId");
         //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
