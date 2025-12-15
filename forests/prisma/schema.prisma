@@ -116,6 +116,7 @@ model Messages {
   foodForest   FoodForest @relation(fields: [foodForestId], references: [id])
   foodForestId Int
   createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
   deletedAt    DateTime?
   message      String
   image        String?
