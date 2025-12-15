@@ -26,12 +26,11 @@ CREATE TABLE "new_Conditions" (
     "soilPH" REAL,
     "soilMoisture" REAL,
     "sunlight" REAL,
-    "status" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Conditions_plantId_fkey" FOREIGN KEY ("plantId") REFERENCES "Plant" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
-INSERT INTO "new_Conditions" ("humidity", "plantId", "soilMoisture", "soilPH", "status", "sunlight", "temperature") SELECT "humidity", "plantId", "soilMoisture", "soilPH", "status", "sunlight", "temperature" FROM "Conditions";
+INSERT INTO "new_Conditions" ("humidity", "plantId", "soilMoisture", "soilPH", "sunlight", "temperature") SELECT "humidity", "plantId", "soilMoisture", "soilPH", "sunlight", "temperature" FROM "Conditions";
 DROP TABLE "Conditions";
 ALTER TABLE "new_Conditions" RENAME TO "Conditions";
 CREATE TABLE "new_FoodForest" (
@@ -60,7 +59,6 @@ CREATE TABLE "new_Plant" (
     "posY" REAL NOT NULL DEFAULT 0,
     "plantStage" TEXT,
     "lastInspected" DATETIME,
-    "plantHealth" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deletedAt" DATETIME,

@@ -87,7 +87,6 @@ model Plant {
   posY              Float       @default(0)
   plantStage        String?
   lastInspected     DateTime?
-  plantHealth       String?
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @default(now()) @updatedAt
   deletedAt         DateTime?
@@ -103,7 +102,6 @@ model Conditions {
   soilPH       Float?
   soilMoisture Float?
   sunlight     Float?
-  status       String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now()) @updatedAt
 }

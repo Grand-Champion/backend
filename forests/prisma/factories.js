@@ -29,7 +29,6 @@ function randomInt(min, max) {
 }
 
 const PLANT_STAGES = ['Young', 'Growing', 'Blooming', 'Mature', 'Fruit-bearing'];
-const HEALTH_STATUSES = ['Excellent', 'Good', 'Fair'];
 
 // zorgt ervoor dat planten niet dezelfde x en y cordinaten krijgen
 const usedPositions = new Set();
@@ -104,7 +103,6 @@ function createPlantFactory(forestId, speciesId, species) {
         speciesId,
         stage: randomChoice(PLANT_STAGES),
         plantStage: randomChoice(PLANT_STAGES),
-        plantHealth: randomChoice(HEALTH_STATUSES),
         harvestPrediction,
         lastInspected,
         image: plantImage,
