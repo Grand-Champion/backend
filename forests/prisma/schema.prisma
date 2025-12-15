@@ -74,7 +74,6 @@ model Plant {
   image             String?
   posX              Float       @default(0)
   posY              Float       @default(0)
-  plantStage        String?
   lastInspected     DateTime?
   plantHealth       String?
   createdAt         DateTime    @default(now())
