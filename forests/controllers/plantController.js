@@ -19,7 +19,7 @@ module.exports = class PlantController {
      */
     static async updatePlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
-        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "speciesId", "posX", "posY"]);
+        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "speciesId", "posX", "posY", "plantHealth"]);
         data.posX = Validation.number(data.posX, "posX", true);
         data.posY = Validation.number(data.posY, "posY", true);
         //TODO: Deze valideren
@@ -93,7 +93,7 @@ module.exports = class PlantController {
      */
     static async createPlant (req, res) {
         const forestId = Validation.int(req.params.id, "(forest) id", true);
-        Validation.body(req.body, ["stage", "harvestPrediction", "height", "image"], ["speciesId", "posX", "posY"]);
+        Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "plantHealth"], ["speciesId", "posX", "posY"]);
         //de data die we aan prisma doorgeven mag geen speciesId bevatten want dat moet via connect gaan.
         const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "posX", "posY"]);
         const speciesId = Validation.int(req.body.speciesId, "speciesId", true);
