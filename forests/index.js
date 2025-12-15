@@ -16,7 +16,7 @@ app.get('/', (req, res)=>{
 
 //404
 app.use((req, res) => {
-    res.status(404).send("Hé, deze endpoint bestaat niet!");
+    res.status(404).send("Hé, deze forest endpoint bestaat niet!");
 });
 
 app.use(errorHandler);

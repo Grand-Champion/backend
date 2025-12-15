@@ -17,6 +17,7 @@ model User {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @default(now()) @updatedAt
   deletedAt   DateTime?
+  messages    Messages[]
 }
 
 model FoodForest {
@@ -30,6 +31,7 @@ model FoodForest {
   createdAt DateTime            @default(now())
   updatedAt DateTime            @default(now()) @updatedAt
   deletedAt DateTime?
+  messages  Messages[]
 }
 
 model Species {
@@ -92,4 +94,18 @@ model Conditions {
   createdAt    DateTime @default(now())
   
   @@id([createdAt, plantId])
+}
+
+model Messages {
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  foodForest   FoodForest @relation(fields: [foodForestId], references: [id])
+  foodForestId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now()) @updatedAt
+  deletedAt    DateTime?
+  message      String
+  image        String?
+
+  @@id([userId, foodForestId, createdAt])
 }
