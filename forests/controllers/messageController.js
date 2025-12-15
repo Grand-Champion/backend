@@ -42,13 +42,22 @@ module.exports = class MessageController {
      * @param {Response} res 
      */
     static async createMessage(req, res) {
-        const data = Validation.body(req.body, ["message", "image"], ["userId", "foodForestId"]);
+        const dataIds = Validation.body(req.body, [], ["userId", "foodForestId"]);
+        const data = Validation.body(req.body, ["message", "image"]);
         //TODO: Deze valideren (dat de user ook echt bestaat)
-        data.userId = Validation.int(data.userId, "userId");
+        dataIds.userId = Validation.int(dataIds.userId, "userId");
         //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
-        data.foodForestId = Validation.int(data.foodForestId, "foodForestId");
+        dataIds.foodForestId = Validation.int(dataIds.foodForestId, "foodForestId");
         const message = await prisma.messages.create({
-            data,
+            data: {
+                user: {
+                    connect: {id: dataIds.userId}
+                },
+                foodForest: {
+                    connect: {id: dataIds.foodForestId}
+                },
+                ...data
+            }
         });
         res.status(201).json({
             message: `Message created successfully`,
@@ -69,15 +78,15 @@ module.exports = class MessageController {
         const data = Validation.body(
             req.body,
             ["message", "image"],
-            ["userId", "foodForestId", "createdAt"]
         );
 
         //TODO: Deze valideren (dat de user ook echt bestaat)
-        const userId = Validation.int(data.userId, "userId");
+        const userId = Validation.int(req.params.userId, "userId", true);
         //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
-        const foodForestId = Validation.int(data.foodForestId, "foodForestId");
+        const foodForestId = Validation.int(req.params.foodForestId, "foodForestId", true);
         //TODO: Deze valideren  (of de createdAt goed is)
-        const createdAt = new Date(data.createdAt);
+        
+        const createdAt = new Date(Validation.int(req.params.createdAt, "createdAt", true));
         if (isNaN(createdAt.getTime())) {
             const err = new Error("Invalid createdAt");
             err.status = 400;

@@ -27,7 +27,7 @@ router.delete("/species/:id", deleteSpecies);
 
 router.get("/messages", getMessages);
 router.post("/messages", createMessage);
-router.patch("/messages/:id", updateMessage);
+router.patch("/messages/:userId/:foodForestId/:createdAt", updateMessage);
 router.delete("/messages/:userId/:foodForestId/:createdAt", deleteMessage);
 
 router.get('/', (req, res) => {
