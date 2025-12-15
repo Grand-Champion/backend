@@ -19,7 +19,7 @@ De backend maakt gebruik van:
 
 - Node.js (JavaScript)
 - REST / API-gateway-architectuur met microservices (t.b.d.)
-- Docker (met Dockerfile) en optioneel docker-compose (voor lokaal testen / ontwikkeling)
+- Docker (met docker-compose)
 
 ## Installatie en Lokale Setup
 
@@ -27,16 +27,14 @@ De backend maakt gebruik van:
    ```bash
    git clone <url-van-de-repo>
    ```
-2. Ga naar de projectmap, installeer dependencies:
+2. Ga naar de projectmappen, installeer dependencies:
    ```bash
    npm install
    ```
 3. (Optioneel) Als je Docker gebruikt: bouw en start containers:
    ```bash
-   docker build -t foodforest-backend .
-   docker run -p <poort>:<poort> foodforest-backend
+   docker-compose up
    ```
-   of met docker-compose (als je `docker-compose.yml` gebruikt).
 4. De server / API-gateway zal starten op de aangegeven poort. Je kunt dan API-verzoeken sturen (GET, POST, PUT, DELETE, etc.) om data aan te maken, op te vragen of te wijzigen.
 
 ## Functionaliteiten (vooralsnog / gepland)

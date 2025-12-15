@@ -19,14 +19,14 @@ module.exports = class PlantController {
      */
     static async updatePlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
-        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "speciesId", "posX", "posY"]);
+        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "speciesId", "posX", "posY", "plantHealth"]);
         data.posX = Validation.number(data.posX, "posX", true);
         data.posY = Validation.number(data.posY, "posY", true);
         //TODO: Deze valideren
         data.forestId = Validation.int(data.forestId, "forestId");
         data.speciesId = Validation.int(data.speciesId, "speciesId");
 
-        const plant = await prisma.plant.findUnique({where: {id}});
+        const plant = await prisma.plant.findUnique({where: {id, deletedAt: null}});
         if(!plant){
             throw {status: 404, message: "plant not found"};
         }
@@ -46,10 +46,14 @@ module.exports = class PlantController {
     static async getPlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
         const data = await prisma.plant.findUnique({ 
-            where: {id},
+            where: {id, deletedAt: null},
             include: {
                 species: true,
-                conditions: true
+                conditions: {
+                    orderBy: {
+                        createdAt: "desc"
+                    }
+                }
             }
         });
         if(!data){
@@ -71,20 +75,14 @@ module.exports = class PlantController {
      */
     static async deletePlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
-        const plant = await prisma.plant.findUnique({where: {id}});
+        const plant = await prisma.plant.findUnique({where: {id, deletedAt: null}});
         if(!plant){
             throw {status: 404, message: "plant not found"};
         }
-        try {
-            await prisma.conditions.delete({where: {plantId: id}});
-        } catch (e) {
-            // alleen als het een error P2025 is (we kunnen de conditions niet verwijderen omdat ze niet bestaan) negeren we hem,
-            // anders throwen we hem weer zodat de error handler hem oppakt.
-            if(e.code !== "P2025"){
-                throw e;
-            }
-        }
-        const result = await prisma.plant.delete({where: {id}});
+        const result = await prisma.plant.update({where: {id}, data: {
+            deletedAt: new Date()
+        }});
+
         res.status(200).send(`plant with id ${result.id} deleted`);
     }
     
@@ -95,8 +93,10 @@ module.exports = class PlantController {
      */
     static async createPlant (req, res) {
         const forestId = Validation.int(req.params.id, "(forest) id", true);
-        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image"], ["speciesId", "posX", "posY"]);
-        data.speciesId = Validation.int(data.speciesId, "speciesId", true);
+        Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "plantHealth"], ["speciesId", "posX", "posY"]);
+        //de data die we aan prisma doorgeven mag geen speciesId bevatten want dat moet via connect gaan.
+        const data = Validation.body(req.body, ["stage", "harvestPrediction", "height", "image", "posX", "posY"]);
+        const speciesId = Validation.int(req.body.speciesId, "speciesId", true);
         data.posX = Validation.number(data.posX, "posX", true);
         data.posY = Validation.number(data.posY, "posY", true);
 
@@ -118,8 +118,7 @@ module.exports = class PlantController {
                 species: {
                     connect: {id: speciesId}
                 }, 
-                stage, 
-                harvestPrediction
+                ...data
             }
         });
 

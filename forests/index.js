@@ -16,12 +16,12 @@ app.get('/', (req, res)=>{
 
 //404
 app.use((req, res) => {
-    res.status(404).send("Hé, deze endpoint bestaat niet!");
+    res.status(404).send("Hé, deze forest endpoint bestaat niet!");
 });
 
 app.use(errorHandler);
 
-const port = parseInt(process.env.PORT, 10) || 3012;
+const port = parseInt(process.env.FORESTS_PORT, 10) || 3012;
 
 app.listen(port, () => {
     console.log(`🍿 Express running → PORT ${port}`);
