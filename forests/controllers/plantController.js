@@ -1,13 +1,16 @@
 // Standaard dingen
 const { PrismaClient } = require('@prisma/client');
 
-const { PrismaLibSql } = require('@prisma/adapter-libsql');
-
 const Validation = require("../lib/validation");
 
-const adapter = new PrismaLibSql({
-    url: "file:./file.db"
-})
+const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+const adapter = new PrismaMariaDb({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_DATABASE,
+    port: process.env.DATABASE_PORT,
+});
 
 const prisma = new PrismaClient({adapter}); 
 

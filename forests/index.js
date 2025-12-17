@@ -1,5 +1,5 @@
 const Express = require("express");
-require('dotenv').config()
+require('dotenv').config();
 const IndexRouter = require("./routes/index.js");
 const errorHandler = require("./middleware/errorHandler.js");
 

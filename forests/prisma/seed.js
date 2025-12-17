@@ -1,10 +1,15 @@
 /* eslint-disable no-console */
 const { PrismaClient } = require('@prisma/client');
-const { PrismaLibSql } = require('@prisma/adapter-libsql');
 const { createPlantFactory, resetPositions } = require('./factories');
+require('dotenv').config();
+const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
 
-const adapter = new PrismaLibSql({
-    url: "file:./file.db"
+const adapter = new PrismaMariaDb({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_DATABASE,
+    port: process.env.DATABASE_PORT,
 });
 
 const prisma = new PrismaClient({ adapter });

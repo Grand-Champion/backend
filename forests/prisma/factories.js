@@ -104,7 +104,6 @@ function createPlantFactory(forestId, speciesId, species) {
         foodForestId: forestId,
         speciesId,
         stage: randomChoice(PLANT_STAGES),
-        plantStage: randomChoice(PLANT_STAGES),
         plantHealth: randomChoice(HEALTH_STATUSES),
         harvestPrediction,
         lastInspected,

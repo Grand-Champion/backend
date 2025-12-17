@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
 }
 
 model User {
@@ -24,7 +24,7 @@ model FoodForest {
   id        Int                 @id @default(autoincrement())
   name      String
   location  String
-  image     String?
+  image     String?             @db.MediumText
   owner     User?               @relation(fields: [ownerId], references: [id])
   ownerId   Int?
   plants    Plant[]
@@ -55,7 +55,7 @@ model Species {
   maxSoilMoisture Float?
   minSunlight     Float?
   maxSunlight     Float?
-  image           String?
+  image           String?             @db.MediumText
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @default(now()) @updatedAt
   deletedAt       DateTime?
@@ -71,7 +71,7 @@ model Plant {
   foodForestId      Int
   conditions        Conditions[]
   height            String?
-  image             String?
+  image             String?     @db.MediumText
   posX              Float       @default(0)
   posY              Float       @default(0)
   lastInspected     DateTime?
@@ -104,7 +104,7 @@ model Messages {
   updatedAt    DateTime   @default(now()) @updatedAt
   deletedAt    DateTime?
   message      String
-  image        String?
+  image        String?    @db.MediumText
 
   @@id([userId, foodForestId, createdAt])
 }
