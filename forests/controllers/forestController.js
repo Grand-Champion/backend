@@ -2,6 +2,7 @@
 const { PrismaClient } = require('@prisma/client');
 
 const Validation = require("../lib/validation");
+const { calculateConditionStatus } = require("../lib/set-status.js");
 
 const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
 const adapter = new PrismaMariaDb({
@@ -51,11 +52,13 @@ module.exports = class ForestController {
             include: {
                 plants: {
                     include: {
-                        conditions: {
+                        conditions:
+                         {
                             orderBy: {
                                 createdAt: "desc"
                             }
-                        }
+                        },
+                        species: true
                     },
                     where: {
                         deletedAt: null
@@ -66,6 +69,20 @@ module.exports = class ForestController {
         if(!data){
             throw {status: 404, message: "forest not found"};
         }
+
+        // Bereken status voor alle planten
+        if (data.plants) {
+                data.plants.forEach(plant => {
+                    if (plant.species && plant.conditions && plant.conditions.length > 0) {
+                        plant.conditions.forEach(condition => {
+                            condition.status = calculateConditionStatus(condition, plant.species);
+                        });
+                    } else {
+                        plant.conditions = [{ status: "no data available" }];
+                    }
+                });
+        }
+
         const response = {
             data,
             meta: {
