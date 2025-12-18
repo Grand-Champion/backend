@@ -18,6 +18,8 @@ model User {
   updatedAt   DateTime     @default(now()) @updatedAt
   deletedAt   DateTime?
   messages    Messages[]
+  displayName String?
+  role        String       @default("user")
 }
 
 model FoodForest {
