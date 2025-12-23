@@ -1,6 +1,6 @@
 const Express = require("express");
 const { createProxyMiddleware, fixRequestBody } = require("http-proxy-middleware");
-const {ingelogd, metRol, token} = require("../middleware/authentication");
+const { ingelogd, metRol, token } = require("../middleware/authentication");
 const { getUsers, getUser, updateUser, createUser, deleteUser, login, refreshToken, updatePassword } = require("../controllers/userController");
 
 const router = Express.Router();
