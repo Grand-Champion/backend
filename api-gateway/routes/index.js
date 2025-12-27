@@ -29,6 +29,7 @@ router.delete("/users/me", token, ingelogd, deleteUser);
 router.post("/token", token, ingelogd, refreshToken);
 router.patch("/users/me/password", token, ingelogd, updatePassword);
 
+
 //admin
 router.get("/users", token, ingelogd, metRol("admin"), getUsers);
 router.get("/users/:id", token, ingelogd, metRol("admin"), getUser);
@@ -38,6 +39,5 @@ router.delete("/users/:id", token, ingelogd, metRol("admin"), deleteUser);
 //iedereen
 router.post("/users", token, createUser);
 router.post("/login", login);
-
 
 module.exports = router;
