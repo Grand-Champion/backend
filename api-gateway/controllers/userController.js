@@ -16,6 +16,11 @@ const adapter = new PrismaMariaDb({
 const prisma = new PrismaClient({adapter}); 
 
 module.exports = class UserController {
+    /**
+     * Geeft een jwt terug als je wachtwoord en email stuurt
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async login(req, res){
         const { email, password } = Validation.body(req.body, [], ["email", "password"]);
         const user = await prisma.user.findUnique({
@@ -40,6 +45,11 @@ module.exports = class UserController {
         }
     }
 
+    /**
+     * Geeft een nieuwe jwt terug als je een jwt stuurt
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async refreshToken(req, res){
         const user = await prisma.user.findUnique({where: {id: req.jwt.id, deletedAt: null}});
         const token = jwt.sign(Validation.body(user, ["id", "role", "email", "displayName"]), process.env.SECRET_KEY, {expiresIn: "7d"});
@@ -59,6 +69,11 @@ module.exports = class UserController {
         }
     }
 
+    /**
+     * Maakt een nieuwe gebruiker aan (geen jwt: registratieformulier of wél jwt: user-management pagina)
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async createUser(req, res){
         const { password, ...data } = Validation.body(req.body, ["displayName"], ["email", "password"]);
         if(req.jwt?.role === "admin"){
@@ -93,6 +108,11 @@ module.exports = class UserController {
         });
     }
     
+    /**
+     * Werkt een gebruiker bij (zichzelf: niet wachtwoord of user-management pagina admin: wel wachtwoord)
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async updateUser(req, res){
         let data,  id;
         if(req.params?.id){
@@ -135,7 +155,11 @@ module.exports = class UserController {
         });
     }
 
-    
+    /**
+     * Werkt het wachtwoord van de gebruiker bij als je een jwt, nieuw wachtwoord en huidig wachtwoord stuurt
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async updatePassword(req, res){
         //een gebruiker verandert zijn eigen instellingen
         const id = Validation.int(req.jwt?.id, "jwt.id", true);
@@ -165,6 +189,11 @@ module.exports = class UserController {
         }
     }
     
+    /**
+     * Verwijdert een gebruiker (zichzelf: wachtwoord nodig, admin user-management pagina: geen wachtwoord nodig)
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async deleteUser(req, res){
         let id;
         if(req.params?.id && req.jwt?.role === "admin"){
@@ -204,6 +233,11 @@ module.exports = class UserController {
         });
     }
     
+    /**
+     * Vraagt info gebruiker op
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async getUser(req, res){
         let id;
         if(req.params?.id){
@@ -237,6 +271,11 @@ module.exports = class UserController {
         res.status(200).json(response);
     }
 
+    /**
+     * Vraagt alle gebruikers op
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     static async getUsers(req, res){
         const data = await prisma.user.findMany({
             where: { deletedAt: null },
