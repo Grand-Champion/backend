@@ -105,6 +105,7 @@ module.exports = class MessageController {
                     foodForestId,
                     createdAt,
                 },
+                deletedAt: null
             },
         });
 
@@ -164,16 +165,20 @@ module.exports = class MessageController {
                     foodForestId,
                     createdAt,
                 },
+                deletedAt: null
             },
+            include: {
+                foodForest: true
+            }
         });
 
-        if (!message || message.deletedAt) {
+        if (!message) {
             const err = new Error("Message not found");
             err.status = 404;
             throw err;
         }
 
-        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === forest.ownerId) {
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === message.foodForest.ownerId || Validation.int(req.jwt.id, "jwt.id") === message.userId) {
             const result = await prisma.messages.update({
                 where: {
                     userId_foodForestId_createdAt: {
