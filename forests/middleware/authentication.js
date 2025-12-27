@@ -8,11 +8,12 @@ class Authentication {
      * @param {function()} next
      */
     static token(req, res, next){
-        const token = req.header('Authorization');
-        if (!token) {
+        const auth = req.header('Authorization');
+        if (!auth) {
             next();
             return;
         }
+        const token = auth.split(" ").pop();
 
         let decoded;
         try{
