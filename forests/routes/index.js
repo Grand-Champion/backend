@@ -3,6 +3,8 @@ const { getForests, getForest, createForest, updateForest, deleteForest, getFood
 const { getSpeciesMany, getSpecies, createSpecies, updateSpecies, deleteSpecies, getSpeciesFoodForests } = require("../controllers/speciesController.js");
 const { getPlant, updatePlant, deletePlant, createPlant } = require("../controllers/plantController.js");
 const { getMessages, createMessage, updateMessage, deleteMessage } = require("../controllers/messageController.js");
+const { storeSensorData } = require("../controllers/sensorController.js");
+
 const router = Express.Router();
 
 router.get("/forests", /* als je middleware nodig hebt (bijv. authenticatie), zou je die hier toe kunnen voegen */getForests);
@@ -29,6 +31,8 @@ router.get("/messages", getMessages);
 router.post("/messages", createMessage);
 router.patch("/messages/:userId/:foodForestId/:createdAt", updateMessage);
 router.delete("/messages/:userId/:foodForestId/:createdAt", deleteMessage);
+
+router.post('/sensor-data', storeSensorData);
 
 router.get('/', (req, res) => {
     res.send('Je hebt de forests api v1 bereikt!');
