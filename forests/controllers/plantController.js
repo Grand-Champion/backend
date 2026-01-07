@@ -29,16 +29,23 @@ module.exports = class PlantController {
         data.forestId = Validation.int(data.forestId, "forestId");
         data.speciesId = Validation.int(data.speciesId, "speciesId");
 
-        const plant = await prisma.plant.findUnique({where: {id, deletedAt: null}});
+        const plant = await prisma.plant.findUnique({
+            where: {id, deletedAt: null},
+            include: { foodForest: true }
+        });
         if(!plant){
             throw {status: 404, message: "plant not found"};
         }
-        const updated = await prisma.plant.update({
-            where: {id},
-            data
-        });
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === plant.foodForest.ownerId) {
+            const updated = await prisma.plant.update({
+                where: {id},
+                data
+            });
 
-        res.status(200).send(`plant with id ${updated.id} updated`);
+            res.status(200).send(`plant with id ${updated.id} updated`);
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     };
 
     /**
@@ -78,15 +85,22 @@ module.exports = class PlantController {
      */
     static async deletePlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
-        const plant = await prisma.plant.findUnique({where: {id, deletedAt: null}});
+        const plant = await prisma.plant.findUnique({
+            where: {id, deletedAt: null},
+            include: { foodForest: true }
+        });
         if(!plant){
             throw {status: 404, message: "plant not found"};
         }
-        const result = await prisma.plant.update({where: {id}, data: {
-            deletedAt: new Date()
-        }});
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === plant.foodForest.ownerId) {
+            const result = await prisma.plant.update({where: {id}, data: {
+                deletedAt: new Date()
+            }});
 
-        res.status(200).send(`plant with id ${result.id} deleted`);
+            res.status(200).send(`plant with id ${result.id} deleted`);
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     }
     
     /**
@@ -113,18 +127,22 @@ module.exports = class PlantController {
             throw {status: 404, message: "species not found"};
         }
 
-        const plant = await prisma.plant.create({
-            data: {
-                foodForest: {
-                    connect: {id: forestId}
-                },
-                species: {
-                    connect: {id: speciesId}
-                }, 
-                ...data
-            }
-        });
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === forest.ownerId) {
+            const plant = await prisma.plant.create({
+                data: {
+                    foodForest: {
+                        connect: {id: forestId}
+                    },
+                    species: {
+                        connect: {id: speciesId}
+                    }, 
+                    ...data
+                }
+            });
 
-        res.status(201).send(`plant created with id ${plant.id}`);
+            res.status(201).send(`plant created with id ${plant.id}`);
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     }
 }

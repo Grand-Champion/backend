@@ -82,8 +82,9 @@ module.exports = class ForestController {
      * @param {Response} res 
      */
     static async createForest (req, res) {
-        const data = Validation.body(req.body, ["ownerId"], ["name", "location", "image"]);
+        const data = Validation.body(req.body, [], ["name", "location", "image"]);
         //TODO: Deze valideren (dat de owner ook echt bestaat)
+        data.ownerId = req.jwt.id;
         data.ownerId = Validation.int(data.ownerId, "ownerId");
         const forest = await prisma.foodForest.create({
             data
@@ -106,12 +107,16 @@ module.exports = class ForestController {
         if(!forest){
             throw {status: 404, message: "forest not found"};
         }
-        const updated = await prisma.foodForest.update({
-            where: {id},
-            data
-        });
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === forest.ownerId) {
+            const updated = await prisma.foodForest.update({
+                where: {id},
+                data
+            });
 
-        res.status(200).send(`forest with id ${updated.id} updated`);
+            res.status(200).send(`forest with id ${updated.id} updated`);
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     };
 
     /**
@@ -125,11 +130,14 @@ module.exports = class ForestController {
         if(!forest){
             throw {status: 404, message: "forest not found"};
         }
-        const result = await prisma.foodForest.update({where: {id}, data: {
-            deletedAt: new Date()
-        }});
-        res.status(200).send(`forest with id ${result.id} deleted`);
-
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === forest.ownerId) {
+            const result = await prisma.foodForest.update({where: {id}, data: {
+                deletedAt: new Date()
+            }});
+            res.status(200).send(`forest with id ${result.id} deleted`);
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     }
 
     /**
