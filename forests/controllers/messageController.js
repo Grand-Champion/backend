@@ -105,6 +105,7 @@ module.exports = class MessageController {
                     foodForestId,
                     createdAt,
                 },
+                deletedAt: null
             },
         });
 
@@ -114,33 +115,37 @@ module.exports = class MessageController {
             throw err;
         }
 
-        const updateData = Validation.body(data, ["message", "image"]);
-        if (Object.keys(updateData).length === 0) {
-            const err = new Error("No fields provided to update");
-            err.status = 400;
-            throw err;
-        }
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === message.userId) {
+            const updateData = Validation.body(data, ["message", "image"]);
+            if (Object.keys(updateData).length === 0) {
+                const err = new Error("No fields provided to update");
+                err.status = 400;
+                throw err;
+            }
 
-        const updated = await prisma.messages.update({
-            where: {
-                userId_foodForestId_createdAt: {
-                    userId,
-                    foodForestId,
-                    createdAt,
+            const updated = await prisma.messages.update({
+                where: {
+                    userId_foodForestId_createdAt: {
+                        userId,
+                        foodForestId,
+                        createdAt,
+                    },
                 },
-            },
-            data: updateData,
-        });
+                data: updateData,
+            });
 
-        res.status(200).json({
-            message: "Message updated successfully",
-            key: {
-                userId: message.userId,
-                foodForestId: message.foodForestId,
-                createdAt: message.createdAt,
-            },
-            data: updated,
-        });
+            res.status(200).json({
+                message: "Message updated successfully",
+                key: {
+                    userId: message.userId,
+                    foodForestId: message.foodForestId,
+                    createdAt: message.createdAt,
+                },
+                data: updated,
+            });
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     } 
 
     /**
@@ -160,34 +165,42 @@ module.exports = class MessageController {
                     foodForestId,
                     createdAt,
                 },
+                deletedAt: null
             },
+            include: {
+                foodForest: true
+            }
         });
 
-        if (!message || message.deletedAt) {
+        if (!message) {
             const err = new Error("Message not found");
             err.status = 404;
             throw err;
         }
 
-        const result = await prisma.messages.update({
-            where: {
-                userId_foodForestId_createdAt: {
-                    userId,
-                    foodForestId,
-                    createdAt,
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === message.foodForest.ownerId || Validation.int(req.jwt.id, "jwt.id") === message.userId) {
+            const result = await prisma.messages.update({
+                where: {
+                    userId_foodForestId_createdAt: {
+                        userId,
+                        foodForestId,
+                        createdAt,
+                    },
                 },
-            },
-            data: {
-                deletedAt: new Date()
-            }
-        });
-        res.status(200).json({
-            message: "Message deleted successfully",
-            key: {
-                userId: result.userId,
-                foodForestId: result.foodForestId,
-                createdAt: result.createdAt,
-            },
-        });
+                data: {
+                    deletedAt: new Date()
+                }
+            });
+            res.status(200).json({
+                message: "Message deleted successfully",
+                key: {
+                    userId: result.userId,
+                    foodForestId: result.foodForestId,
+                    createdAt: result.createdAt,
+                },
+            });
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     } 
 }

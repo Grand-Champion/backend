@@ -2,6 +2,7 @@ const Express = require("express");
 require('dotenv').config();
 const IndexRouter = require("./routes/index.js");
 const cors = require("cors");
+const errorHandler = require("./middleware/errorHandler.js");
 
 const app = Express();
 app.use(cors());
@@ -14,6 +15,8 @@ app.use('/', IndexRouter);
 app.use((req, res) => {
     res.status(404).send("Hé, deze endpoint bestaat niet!");
 });
+
+app.use(errorHandler);
 
 const port = parseInt(process.env.GATEWAY_PORT, 10) || 3011;
 
