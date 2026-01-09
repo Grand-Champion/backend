@@ -122,7 +122,6 @@ function createPlantFactory(forestId, speciesId, species) {
                 soilPH: randomFloat(species.minSoilPH || 5.0, species.maxSoilPH || 7.5, 1),
                 soilMoisture: randomFloat(35, 85, 1),
                 sunlight: randomFloat(35, 80, 1),
-                status: randomChoice(CONDITION_STATUSES),
                 createdAt: new Date(randomInt(1577833200000, Date.now()))
             });
         }
