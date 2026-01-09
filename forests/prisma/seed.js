@@ -48,8 +48,8 @@ async function main() {
             maxSoilPH: 7.0,
             minSoilMoisture: 40,
             maxSoilMoisture: 70,
-            minSunlight: 6,
-            maxSunlight: 12,
+            minSunlight: 40,
+            maxSunlight: 75,
             image: 'https://upload.wikimedia.org/wikipedia/commons/1/19/Tree_with_red_apples_in_Barkedal_4.jpg',
         }
     });
@@ -72,8 +72,8 @@ async function main() {
             maxSoilPH: 7.5,
             minSoilMoisture: 45,
             maxSoilMoisture: 75,
-            minSunlight: 6,
-            maxSunlight: 10,
+            minSunlight: 40,
+            maxSunlight: 70,
             image: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Pear_in_tree_0465.jpg',
         }
     });
@@ -96,8 +96,8 @@ async function main() {
             maxSoilPH: 6.5,
             minSoilMoisture: 60,
             maxSoilMoisture: 80,
-            minSunlight: 6,
-            maxSunlight: 10,
+            minSunlight: 50,
+            maxSunlight: 75,
             image: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Fragaria_vesca_LC0389.jpg',
         }
     });
@@ -120,8 +120,8 @@ async function main() {
             maxSoilPH: 6.5,
             minSoilMoisture: 50,
             maxSoilMoisture: 70,
-            minSunlight: 5,
-            maxSunlight: 10,
+            minSunlight: 45,
+            maxSunlight: 70,
             image: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Framboise_Margy_3.jpg',
         }
     });
@@ -144,8 +144,8 @@ async function main() {
             maxSoilPH: 7.0,
             minSoilMoisture: 30,
             maxSoilMoisture: 60,
-            minSunlight: 4,
-            maxSunlight: 10,
+            minSunlight: 40,
+            maxSunlight: 65,
             image: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/BlackberryBush.jpg',
         }
     });
@@ -168,8 +168,8 @@ async function main() {
             maxSoilPH: 5.5,
             minSoilMoisture: 50,
             maxSoilMoisture: 70,
-            minSunlight: 6,
-            maxSunlight: 10,
+            minSunlight: 50,
+            maxSunlight: 75,
             image: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Rochester_blueberries.JPG',
         }
     });
