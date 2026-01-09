@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+const Validation = require('../lib/validation');
 
 const adapter = new PrismaMariaDb({
   host: process.env.DATABASE_HOST,
@@ -12,33 +13,21 @@ const adapter = new PrismaMariaDb({
 const prisma = new PrismaClient({ adapter });
 
 exports.storeSensorData = async (req, res) => {
-  const {
-    plantId,
-    temperature,
-    humidity,
-    soilMoisture,
-    sunlight,
-  } = req.body;
+  const plantId = Validation.int(req.body.plantId, 'plantId', true);
+  const temperature = Validation.number(req.body.temperature, 'temperature');
+  const humidity = Validation.number(req.body.humidity, 'humidity');
+  const soilMoisture = Validation.number(req.body.soilMoisture, 'soilMoisture');
+  const sunlight = Validation.number(req.body.sunlight, 'sunlight');
 
-  if (!plantId) {
-    return res.status(400).json({ error: 'plantId missing' });
-  }
+  const condition = await prisma.conditions.create({
+    data: {
+      plantId,
+      temperature,
+      humidity,
+      soilMoisture,
+      sunlight,
+    },
+  });
 
-  try {
-    const condition = await prisma.conditions.create({
-      data: {
-        plantId: Number(plantId),
-        temperature: temperature ?? null,
-        humidity: humidity ?? null,
-        soilMoisture: soilMoisture ?? null,
-        sunlight: sunlight ?? null,
-      },
-    });
-
-    console.log("New sensor data saved:", condition);
-    res.json({ success: true, data: condition });
-  } catch (err) {
-    console.error("Database insert is mislukt swa:", err);
-    res.status(500).json({ error: 'Database insert failed' });
-  }
+  res.json({ success: true, data: condition });
 };
