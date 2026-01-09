@@ -31,7 +31,7 @@ De backend maakt gebruik van:
    ```bash
    npm install
    ```
-3. (Optioneel) Als je Docker gebruikt: bouw en start containers:
+3. bouw en start containers:
    ```bash
    docker-compose up
    ```
@@ -46,3 +46,9 @@ De backend maakt gebruik van:
 - Toevoegen van extra microservices met onafhankelijke taken (zoals sensordata en communicatie binnen de applicatie voor gebruikers)
 - Eventuele implementatie van authenticatie en autorisatie
 - Verbetering van beveiliging en validatie d.m.v. middleware
+
+## Schema aanpassen
+- Als je de schema wil aanpassen, doe dit dan in forests/prisma/schema.prisma.
+- Daarna kan je het formatten met `docker exec -it forests npx prisma format` en een migration aanmaken `docker exec -it forests npx prisma migrate dev`
+- Dan moet je ook nog  `docker exec -it forests npx prisma generate` doen. Of je kan de docker service herstarten.
+- Als je veranderingen maakt die ook voor de gateway uit maken, moet je ook die service herstarten (of `docker exec -it api-gateway npx prisma generate`).

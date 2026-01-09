@@ -3,6 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const { createPlantFactory, resetPositions } = require('./factories');
 require('dotenv').config();
 const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+const bcrypt = require("bcryptjs");
 
 const adapter = new PrismaMariaDb({
     host: process.env.DATABASE_HOST,
@@ -23,8 +24,10 @@ async function main() {
     // Maak nieuwe user
     const user = await prisma.user.create({
         data: {
-            email: 'admin@voedselbos.nl',
-            password: 'admin123',
+            email: 'admin',
+            password: bcrypt.hashSync('admin123', 10),
+            displayName: "Admin",
+            role: "admin"
         }
     });
     console.log(`✅ Created user: ${user.email}`);

@@ -4,33 +4,33 @@ const { getSpeciesMany, getSpecies, createSpecies, updateSpecies, deleteSpecies,
 const { getPlant, updatePlant, deletePlant, createPlant } = require("../controllers/plantController.js");
 const { getMessages, createMessage, updateMessage, deleteMessage } = require("../controllers/messageController.js");
 const { storeSensorData } = require("../controllers/sensorController.js");
-
+const { ingelogd, token } = require("../middleware/authentication");
 const router = Express.Router();
 
-router.get("/forests", /* als je middleware nodig hebt (bijv. authenticatie), zou je die hier toe kunnen voegen */getForests);
+router.get("/forests", getForests);
 router.get("/forests/:id", getForest);
-router.post("/forests", createForest);
-router.patch("/forests/:id", updateForest);
-router.delete("/forests/:id", deleteForest);
+router.post("/forests", token, ingelogd, createForest);
+router.patch("/forests/:id", token, ingelogd, updateForest);
+router.delete("/forests/:id", token, ingelogd, deleteForest);
 
-router.post("/forests/:id/plants", createPlant);
+router.post("/forests/:id/plants", token, ingelogd, createPlant);
 router.get("/forests/:id/species", getFoodForestSpecies);
 router.get("/species/:id/forests", getSpeciesFoodForests);
 
 router.get("/plants/:id", getPlant);
-router.patch("/plants/:id", updatePlant);
-router.delete("/plants/:id", deletePlant);
+router.patch("/plants/:id", token, ingelogd, updatePlant);
+router.delete("/plants/:id", token, ingelogd, deletePlant);
 
 router.get("/species", getSpeciesMany);
 router.get("/species/:id", getSpecies);
-router.post("/species", createSpecies);
-router.patch("/species/:id", updateSpecies);
-router.delete("/species/:id", deleteSpecies);
+router.post("/species", token, ingelogd, createSpecies);
+router.patch("/species/:id", token, ingelogd, updateSpecies);
+router.delete("/species/:id", token, ingelogd, deleteSpecies);
 
 router.get("/messages", getMessages);
-router.post("/messages", createMessage);
-router.patch("/messages/:userId/:foodForestId/:createdAt", updateMessage);
-router.delete("/messages/:userId/:foodForestId/:createdAt", deleteMessage);
+router.post("/messages", token, ingelogd, createMessage);
+router.patch("/messages/:userId/:foodForestId/:createdAt", token, ingelogd, updateMessage);
+router.delete("/messages/:userId/:foodForestId/:createdAt", token, ingelogd, deleteMessage);
 
 router.post('/sensor-data', storeSensorData);
 
