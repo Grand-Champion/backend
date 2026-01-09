@@ -13,11 +13,11 @@ const adapter = new PrismaMariaDb({
 const prisma = new PrismaClient({ adapter });
 
 exports.storeSensorData = async (req, res) => {
-  const plantId = Validation.int(req.body.plantId, 'plantId', true);
-  const temperature = Validation.number(req.body.temperature, 'temperature');
-  const humidity = Validation.number(req.body.humidity, 'humidity');
-  const soilMoisture = Validation.number(req.body.soilMoisture, 'soilMoisture');
-  const sunlight = Validation.number(req.body.sunlight, 'sunlight');
+  const plantId = Validation.int(req.body?.plantId, 'plantId', true);
+  const temperature = Validation.number(req.body?.temperature, 'temperature');
+  const humidity = Validation.number(req.body?.humidity, 'humidity');
+  const soilMoisture = Validation.number(req.body?.soilMoisture, 'soilMoisture');
+  const sunlight = Validation.number(req.body?.sunlight, 'sunlight');
 
   const condition = await prisma.conditions.create({
     data: {
