@@ -3,6 +3,7 @@ const { getForests, getForest, createForest, updateForest, deleteForest, getFood
 const { getSpeciesMany, getSpecies, createSpecies, updateSpecies, deleteSpecies, getSpeciesFoodForests } = require("../controllers/speciesController.js");
 const { getPlant, updatePlant, deletePlant, createPlant } = require("../controllers/plantController.js");
 const { getMessages, createMessage, updateMessage, deleteMessage } = require("../controllers/messageController.js");
+const { storeSensorData } = require("../controllers/sensorController.js");
 const { ingelogd, token } = require("../middleware/authentication");
 const router = Express.Router();
 
@@ -30,6 +31,8 @@ router.get("/messages", getMessages);
 router.post("/messages", token, ingelogd, createMessage);
 router.patch("/messages/:userId/:foodForestId/:createdAt", token, ingelogd, updateMessage);
 router.delete("/messages/:userId/:foodForestId/:createdAt", token, ingelogd, deleteMessage);
+
+router.post('/sensor-data', storeSensorData);
 
 router.get('/', (req, res) => {
     res.send('Je hebt de forests api v1 bereikt!');
