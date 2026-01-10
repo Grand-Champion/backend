@@ -30,6 +30,15 @@ module.exports = class MessageController {
             orderBy: {
                 createdAt: "desc",
             },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        displayName: true,
+                        email: true
+                            }
+                        }
+                    }
         });
         const response = {
             data,
@@ -47,32 +56,43 @@ module.exports = class MessageController {
      * @param {Response} res 
      */
     static async createMessage(req, res) {
-        const dataIds = Validation.body(req.body, [], ["userId", "foodForestId"]);
-        const data = Validation.body(req.body, ["message", "image"]);
-        //TODO: Deze valideren (dat de user ook echt bestaat)
-        dataIds.userId = Validation.int(dataIds.userId, "userId");
-        //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
-        dataIds.foodForestId = Validation.int(dataIds.foodForestId, "foodForestId");
-        const message = await prisma.messages.create({
-            data: {
-                user: {
-                    connect: {id: dataIds.userId}
-                },
-                foodForest: {
-                    connect: {id: dataIds.foodForestId}
-                },
-                ...data
-            }
-        });
-        res.status(201).json({
-            message: `Message created successfully`,
-            key: {
-                userId: message.userId,
-                foodForestId: message.foodForestId,
-                createdAt: message.createdAt,
+    const userId = Validation.int(req.jwt.id, "jwt.id");
+
+    const foodForestId = Validation.int(req.params.foodForestId, "foodForestId");
+
+    // message data
+    const data = Validation.body(req.body, ["message", "image"]);
+
+    // check of forest bestaat
+    const forestExists = await prisma.foodForest.findFirst({
+        where: {
+            id: foodForestId,
+            deletedAt: null
+        }
+    });
+
+    if (!forestExists) {
+        throw { status: 404, message: "Food forest not found" };
+    }
+
+    const message = await prisma.messages.create({
+        data: {
+            message: data.message,
+            image: data.image,
+            user: {
+                connect: { id: userId }
             },
-        });
-    };
+            foodForest: {
+                connect: { id: foodForestId }
+            }
+        }
+    });
+
+    res.status(201).json({
+        message: "Message created successfully",
+        data: message
+    });
+}
 
     /**
      * Werkt een Message bij
