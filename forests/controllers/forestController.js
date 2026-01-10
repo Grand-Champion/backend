@@ -183,4 +183,31 @@ module.exports = class ForestController {
         }
         res.status(200).json(response);
     }
+
+    
+    /**
+     * Stuurt een lijst van messages in een forest terug
+     * @param {Request} req 
+     * @param {Response} res
+     */
+    static async getFoodForestMessages(req, res) {
+        const id = Validation.int(req.params.id, "id", true);
+        const data = await prisma.messages.findMany({
+            where: {
+                deletedAt: null,
+                foodForestId: id
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+        const response = {
+            data,
+            meta: {
+                count: data.length,
+                url: req.originalUrl
+            }
+        };
+        res.json(response);
+    };
 }

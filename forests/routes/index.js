@@ -1,5 +1,5 @@
 const Express = require("express");
-const { getForests, getForest, createForest, updateForest, deleteForest, getFoodForestSpecies } = require("../controllers/forestController.js");
+const { getForests, getForest, createForest, updateForest, deleteForest, getFoodForestSpecies, getFoodForestMessages } = require("../controllers/forestController.js");
 const { getSpeciesMany, getSpecies, createSpecies, updateSpecies, deleteSpecies, getSpeciesFoodForests } = require("../controllers/speciesController.js");
 const { getPlant, updatePlant, deletePlant, createPlant } = require("../controllers/plantController.js");
 const { getMessages, createMessage, updateMessage, deleteMessage } = require("../controllers/messageController.js");
@@ -15,6 +15,7 @@ router.delete("/forests/:id", token, ingelogd, deleteForest);
 
 router.post("/forests/:id/plants", token, ingelogd, createPlant);
 router.get("/forests/:id/species", getFoodForestSpecies);
+router.get("/forests/:id/messages", getFoodForestMessages);
 router.get("/species/:id/forests", getSpeciesFoodForests);
 
 router.get("/plants/:id", getPlant);
