@@ -200,6 +200,15 @@ module.exports = class ForestController {
             orderBy: {
                 createdAt: "desc",
             },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        displayName: true,
+                        email: true
+                    }
+                }
+            }
         });
         const response = {
             data,

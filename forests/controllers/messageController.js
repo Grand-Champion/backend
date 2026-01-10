@@ -36,9 +36,9 @@ module.exports = class MessageController {
                         id: true,
                         displayName: true,
                         email: true
-                            }
-                        }
                     }
+                }
+            }
         });
         const response = {
             data,
