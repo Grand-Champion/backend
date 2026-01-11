@@ -29,7 +29,7 @@ router.patch("/species/:id", token, ingelogd, updateSpecies);
 router.delete("/species/:id", token, ingelogd, deleteSpecies);
 
 router.get("/messages", getMessages);
-router.post("/messages", token, ingelogd, createMessage);
+router.post("/forests/:foodForestId/messages", token, ingelogd, createMessage);
 router.patch("/messages/:userId/:foodForestId/:createdAt", token, ingelogd, updateMessage);
 router.delete("/messages/:userId/:foodForestId/:createdAt", token, ingelogd, deleteMessage);
 
