@@ -195,6 +195,7 @@ async function main() {
             name: 'Rotterdam Urban Garden',
             location: 'Rotterdam West',
             ownerId: user.id,
+            image: '/images/food-forest-2.jpg'
         }
     });
     console.log(`✅ Created forest: ${forest2.name}`);
@@ -204,6 +205,7 @@ async function main() {
             name: 'HZ Green Office',
             location: 'Vlissingen',
             ownerId: user.id,
+            image: '/images/food-forest-3.jpg'
         }
     });
     console.log(`✅ Created forest: ${forest3.name}`);
