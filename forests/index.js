@@ -5,8 +5,8 @@ const errorHandler = require("./middleware/errorHandler.js");
 
 const app = Express();
 
-app.use(Express.json());
-app.use(Express.urlencoded({ extended: true }));
+app.use(Express.json({ limit: "5mb" }));
+app.use(Express.urlencoded({ extended: true, limit: "5mb" }));
 
 app.use('/api/v1/', IndexRouter);
 
