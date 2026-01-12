@@ -4,14 +4,14 @@ const { getSpeciesMany, getSpecies, createSpecies, updateSpecies, deleteSpecies,
 const { getPlant, updatePlant, deletePlant, createPlant } = require("../controllers/plantController.js");
 const { getMessages, createMessage, updateMessage, deleteMessage } = require("../controllers/messageController.js");
 const { storeSensorData } = require("../controllers/sensorController.js");
-const { ingelogd, token } = require("../middleware/authentication");
+const { ingelogd, token, metRol } = require("../middleware/authentication");
 const router = Express.Router();
 
 router.get("/forests", getForests);
 router.get("/forests/:id", getForest);
-router.post("/forests", token, ingelogd, createForest);
+router.post("/forests", token, ingelogd, metRol("admin"), createForest);
 router.patch("/forests/:id", token, ingelogd, updateForest);
-router.delete("/forests/:id", token, ingelogd, deleteForest);
+router.delete("/forests/:id", token, ingelogd, metRol("admin"), deleteForest);
 
 router.post("/forests/:id/plants", token, ingelogd, createPlant);
 router.get("/forests/:id/species", getFoodForestSpecies);
