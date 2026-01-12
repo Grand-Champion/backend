@@ -78,7 +78,7 @@ module.exports = class ForestController {
                             condition.status = calculateConditionStatus(condition, plant.species);
                         });
                     } else {
-                        plant.conditions = [{ status: "no data available" }];
+                        plant.conditions = [{ status: "Unknown" }];
                     }
                 });
         }

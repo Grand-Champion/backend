@@ -77,7 +77,7 @@ module.exports = class PlantController {
                 condition.status = calculateConditionStatus(condition, data.species);
             });
         } else {
-            data.conditions = [{ status: "no data available" }];
+            data.conditions = [{ status: "Unknown" }];
         }
         
         const response = {
