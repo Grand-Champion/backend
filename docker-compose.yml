@@ -1,19 +1,36 @@
 services:
   gateway:
     container_name: api-gateway
+    environment:
+      DATABASE_URL: mysql://db_username:db_password@database:3306/foodforests
+      DATABASE_HOST: database
+      DATABASE_PORT: 3306
+      DATABASE_USER: db_username
+      DATABASE_PASSWORD: db_password
+      DATABASE_DATABASE: foodforests
     build: 
       dockerfile: ../Dockerfile
       context: api-gateway
     volumes:
       - ./api-gateway:/usr/src/app
+      - ./forests/prisma:/usr/src/app/prisma
+      - ./forests/lib:/usr/src/app/lib
+      - ./forests/middleware:/usr/src/app/middleware
     networks:
       - voedselbos
     ports:
       - "3011:3011"
     working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
+    command: bash -c "npm install && npx prisma generate --no-hints && npm install -g nodemon && npx nodemon -L"
   forests:
     container_name: forests
+    environment:
+      DATABASE_URL: mysql://db_username:db_password@database:3306/foodforests
+      DATABASE_HOST: database
+      DATABASE_PORT: 3306
+      DATABASE_USER: db_username
+      DATABASE_PASSWORD: db_password
+      DATABASE_DATABASE: foodforests
     build: 
       dockerfile: ../Dockerfile
       context: forests
@@ -25,6 +42,18 @@ services:
     #node --watch werkt niet met wsl2 helaas.
     #command: bash -c "npm install && npx prisma generate --no-hints && npx prisma migrate deploy && npm run dev"
     command: bash -c "npm install && npx prisma generate --no-hints && npx prisma migrate deploy && npm install -g nodemon && npx nodemon -L"
+  database:
+    build: ./db
+    environment:
+      MYSQL_DATABASE: foodforests
+      MYSQL_ROOT_PASSWORD: eenwachtwoord
+    networks:
+      - voedselbos
+    volumes:
+      - ./db/data:/var/lib/mysql
+    #ports:
+    #alleen als het per sé moet
+    #  - "3306:3306"
 
 networks:
   voedselbos:

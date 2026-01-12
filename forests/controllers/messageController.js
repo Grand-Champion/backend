@@ -1,13 +1,18 @@
 // Standaard dingen
 const { PrismaClient } = require('@prisma/client');
 
-const { PrismaLibSql } = require('@prisma/adapter-libsql');
-
 const Validation = require("../lib/validation");
 
-const adapter = new PrismaLibSql({
-    url: "file:./file.db"
-})
+const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+
+const adapter = new PrismaMariaDb({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_DATABASE,
+    port: process.env.DATABASE_PORT,
+});
+
 
 const prisma = new PrismaClient({ adapter });
 
@@ -25,6 +30,15 @@ module.exports = class MessageController {
             orderBy: {
                 createdAt: "desc",
             },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        displayName: true,
+                        email: true
+                    }
+                }
+            }
         });
         const response = {
             data,
@@ -42,32 +56,43 @@ module.exports = class MessageController {
      * @param {Response} res 
      */
     static async createMessage(req, res) {
-        const dataIds = Validation.body(req.body, [], ["userId", "foodForestId"]);
-        const data = Validation.body(req.body, ["message", "image"]);
-        //TODO: Deze valideren (dat de user ook echt bestaat)
-        dataIds.userId = Validation.int(dataIds.userId, "userId");
-        //TODO: Deze valideren (dat het voedselbos ook echt bestaat)
-        dataIds.foodForestId = Validation.int(dataIds.foodForestId, "foodForestId");
-        const message = await prisma.messages.create({
-            data: {
-                user: {
-                    connect: {id: dataIds.userId}
-                },
-                foodForest: {
-                    connect: {id: dataIds.foodForestId}
-                },
-                ...data
-            }
-        });
-        res.status(201).json({
-            message: `Message created successfully`,
-            key: {
-                userId: message.userId,
-                foodForestId: message.foodForestId,
-                createdAt: message.createdAt,
+    const userId = Validation.int(req.jwt.id, "jwt.id");
+
+    const foodForestId = Validation.int(req.params.foodForestId, "foodForestId");
+
+    // message data
+    const data = Validation.body(req.body, ["message", "image"]);
+
+    // check of forest bestaat
+    const forestExists = await prisma.foodForest.findFirst({
+        where: {
+            id: foodForestId,
+            deletedAt: null
+        }
+    });
+
+    if (!forestExists) {
+        throw { status: 404, message: "Food forest not found" };
+    }
+
+    const message = await prisma.messages.create({
+        data: {
+            message: data.message,
+            image: data.image,
+            user: {
+                connect: { id: userId }
             },
-        });
-    };
+            foodForest: {
+                connect: { id: foodForestId }
+            }
+        }
+    });
+
+    res.status(201).json({
+        message: "Message created successfully",
+        data: message
+    });
+}
 
     /**
      * Werkt een Message bij
@@ -100,6 +125,7 @@ module.exports = class MessageController {
                     foodForestId,
                     createdAt,
                 },
+                deletedAt: null
             },
         });
 
@@ -109,33 +135,37 @@ module.exports = class MessageController {
             throw err;
         }
 
-        const updateData = Validation.body(data, ["message", "image"]);
-        if (Object.keys(updateData).length === 0) {
-            const err = new Error("No fields provided to update");
-            err.status = 400;
-            throw err;
-        }
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === message.userId) {
+            const updateData = Validation.body(data, ["message", "image"]);
+            if (Object.keys(updateData).length === 0) {
+                const err = new Error("No fields provided to update");
+                err.status = 400;
+                throw err;
+            }
 
-        const updated = await prisma.messages.update({
-            where: {
-                userId_foodForestId_createdAt: {
-                    userId,
-                    foodForestId,
-                    createdAt,
+            const updated = await prisma.messages.update({
+                where: {
+                    userId_foodForestId_createdAt: {
+                        userId,
+                        foodForestId,
+                        createdAt,
+                    },
                 },
-            },
-            data: updateData,
-        });
+                data: updateData,
+            });
 
-        res.status(200).json({
-            message: "Message updated successfully",
-            key: {
-                userId: message.userId,
-                foodForestId: message.foodForestId,
-                createdAt: message.createdAt,
-            },
-            data: updated,
-        });
+            res.status(200).json({
+                message: "Message updated successfully",
+                key: {
+                    userId: message.userId,
+                    foodForestId: message.foodForestId,
+                    createdAt: message.createdAt,
+                },
+                data: updated,
+            });
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     } 
 
     /**
@@ -155,34 +185,42 @@ module.exports = class MessageController {
                     foodForestId,
                     createdAt,
                 },
+                deletedAt: null
             },
+            include: {
+                foodForest: true
+            }
         });
 
-        if (!message || message.deletedAt) {
+        if (!message) {
             const err = new Error("Message not found");
             err.status = 404;
             throw err;
         }
 
-        const result = await prisma.messages.update({
-            where: {
-                userId_foodForestId_createdAt: {
-                    userId,
-                    foodForestId,
-                    createdAt,
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === message.foodForest.ownerId || Validation.int(req.jwt.id, "jwt.id") === message.userId) {
+            const result = await prisma.messages.update({
+                where: {
+                    userId_foodForestId_createdAt: {
+                        userId,
+                        foodForestId,
+                        createdAt,
+                    },
                 },
-            },
-            data: {
-                deletedAt: new Date()
-            }
-        });
-        res.status(200).json({
-            message: "Message deleted successfully",
-            key: {
-                userId: result.userId,
-                foodForestId: result.foodForestId,
-                createdAt: result.createdAt,
-            },
-        });
+                data: {
+                    deletedAt: new Date()
+                }
+            });
+            res.status(200).json({
+                message: "Message deleted successfully",
+                key: {
+                    userId: result.userId,
+                    foodForestId: result.foodForestId,
+                    createdAt: result.createdAt,
+                },
+            });
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     } 
 }

@@ -1,13 +1,17 @@
 // Standaard dingen
 const { PrismaClient } = require('@prisma/client');
 
-const { PrismaLibSql } = require('@prisma/adapter-libsql');
-
 const Validation = require("../lib/validation");
+const { calculateConditionStatus } = require("../lib/set-status.js");
 
-const adapter = new PrismaLibSql({
-    url: "file:./file.db"
-})
+const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+const adapter = new PrismaMariaDb({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_DATABASE,
+    port: process.env.DATABASE_PORT,
+});
 
 const prisma = new PrismaClient({adapter}); 
 
@@ -26,16 +30,23 @@ module.exports = class PlantController {
         data.forestId = Validation.int(data.forestId, "forestId");
         data.speciesId = Validation.int(data.speciesId, "speciesId");
 
-        const plant = await prisma.plant.findUnique({where: {id, deletedAt: null}});
+        const plant = await prisma.plant.findUnique({
+            where: {id, deletedAt: null},
+            include: { foodForest: true }
+        });
         if(!plant){
             throw {status: 404, message: "plant not found"};
         }
-        const updated = await prisma.plant.update({
-            where: {id},
-            data
-        });
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === plant.foodForest.ownerId) {
+            const updated = await prisma.plant.update({
+                where: {id},
+                data
+            });
 
-        res.status(200).send(`plant with id ${updated.id} updated`);
+            res.status(200).send(`plant with id ${updated.id} updated`);
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     };
 
     /**
@@ -59,6 +70,16 @@ module.exports = class PlantController {
         if(!data){
             throw {status: 404, message: "plant not found"};
         }
+
+        // Bereken status
+        if (data.conditions && data.species && data.conditions.length > 0) {
+            data.conditions.forEach(condition => {
+                condition.status = calculateConditionStatus(condition, data.species);
+            });
+        } else {
+            data.conditions = [{ status: "Unknown" }];
+        }
+        
         const response = {
             data,
             meta: {
@@ -75,15 +96,22 @@ module.exports = class PlantController {
      */
     static async deletePlant (req, res) {
         const id = Validation.int(req.params.id, "id", true);
-        const plant = await prisma.plant.findUnique({where: {id, deletedAt: null}});
+        const plant = await prisma.plant.findUnique({
+            where: {id, deletedAt: null},
+            include: { foodForest: true }
+        });
         if(!plant){
             throw {status: 404, message: "plant not found"};
         }
-        const result = await prisma.plant.update({where: {id}, data: {
-            deletedAt: new Date()
-        }});
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === plant.foodForest.ownerId) {
+            const result = await prisma.plant.update({where: {id}, data: {
+                deletedAt: new Date()
+            }});
 
-        res.status(200).send(`plant with id ${result.id} deleted`);
+            res.status(200).send(`plant with id ${result.id} deleted`);
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     }
     
     /**
@@ -110,18 +138,22 @@ module.exports = class PlantController {
             throw {status: 404, message: "species not found"};
         }
 
-        const plant = await prisma.plant.create({
-            data: {
-                foodForest: {
-                    connect: {id: forestId}
-                },
-                species: {
-                    connect: {id: speciesId}
-                }, 
-                ...data
-            }
-        });
+        if(req.jwt.role === "admin" || Validation.int(req.jwt.id, "jwt.id") === forest.ownerId) {
+            const plant = await prisma.plant.create({
+                data: {
+                    foodForest: {
+                        connect: {id: forestId}
+                    },
+                    species: {
+                        connect: {id: speciesId}
+                    }, 
+                    ...data
+                }
+            });
 
-        res.status(201).send(`plant created with id ${plant.id}`);
+            res.status(201).send(`plant created with id ${plant.id}`);
+        } else {
+            throw {status: 403, message: "You are not authorised to do this"};
+        }
     }
 }

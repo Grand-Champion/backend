@@ -1,12 +1,16 @@
 // Standaard dingen
 const { PrismaClient } = require('@prisma/client');
 
-const { PrismaLibSql } = require('@prisma/adapter-libsql');
 const Validation = require('../lib/validation');
 
-const adapter = new PrismaLibSql({
-    url: "file:./file.db"
-})
+const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+const adapter = new PrismaMariaDb({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_DATABASE,
+    port: process.env.DATABASE_PORT,
+});
 
 const prisma = new PrismaClient({adapter}); 
 
@@ -54,7 +58,7 @@ module.exports = class SpeciesController {
      * @param {Request} req 
      * @param {Response} res 
      */
-    static async createSpecies (req, res) {
+    static async createSpecies (req, res) { 
         const data = Validation.body(
             req.body, 
             [
@@ -80,6 +84,21 @@ module.exports = class SpeciesController {
             ], 
             ["name"]
         );
+
+        if(req.jwt.role !== "admin"){
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: req.jwt.id,
+                    deletedAt: null
+                },
+                include: {
+                    foodForests: true
+                }
+            });
+            if(user.foodForests.length === 0){
+                throw {status: 400, message: "Unauthorised"};
+            }
+        }
 
         const species = await prisma.species.create({
             data
@@ -118,6 +137,21 @@ module.exports = class SpeciesController {
         ]);
         const id = Validation.int(req.params.id, "id", true);
 
+        if(req.jwt.role !== "admin"){
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: req.jwt.id,
+                    deletedAt: null
+                },
+                include: {
+                    foodForests: true
+                }
+            });
+            if(user.foodForests.length === 0){
+                throw {status: 400, message: "Unauthorised"};
+            }
+        }
+
         const species = await prisma.species.findUnique({where: {id, deletedAt: null }});
         if(!species){
             throw {status: 404, message: "species not found"};
@@ -138,6 +172,22 @@ module.exports = class SpeciesController {
      */
     static async deleteSpecies (req, res) {
         const id = Validation.int(req.params.id, "id", true);
+
+        
+        if(req.jwt.role !== "admin"){
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: req.jwt.id,
+                    deletedAt: null
+                },
+                include: {
+                    foodForests: true
+                }
+            });
+            if(user.foodForests.length === 0){
+                throw {status: 400, message: "Unauthorised"};
+            }
+        }
 
         const species = await prisma.species.findUnique({where: {id, deletedAt: null }});
         if(!species){

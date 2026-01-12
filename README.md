@@ -3,7 +3,7 @@
 ## Overzicht
 Deze repository bevat de backend van het Food Forest Informatie Platform.
 De backend verzorgt data-beheer, API-endpoints, database-migraties en biedt de basis voor huidige en toekomstige microservices.
-Via de backend kan de frontend communiceren en data opslaan/opvragen (bijvoorbeeld over voedselbossen, sensordata, bos-statussen, etc.).
+Via de backend kan de frontend communiceren en data opslaan/opvragen van de database (bijvoorbeeld over voedselbossen, sensordata, bos-statussen, etc.).
 
 ## Doelen van de Backend  
 De backend is gemaakt voo de volgende doeleinden:
@@ -31,11 +31,16 @@ De backend maakt gebruik van:
    ```bash
    npm install
    ```
-3. (Optioneel) Als je Docker gebruikt: bouw en start containers:
+3. bouw en start containers:
    ```bash
    docker-compose up
    ```
-4. De server / API-gateway zal starten op de aangegeven poort. Je kunt dan API-verzoeken sturen (GET, POST, PUT, DELETE, etc.) om data aan te maken, op te vragen of te wijzigen.
+4. Schema Aanmaken
+in forests/prisma/schema.prisma kan je nieuwe schema's aanmaken. Daarna kan je het formatten met `docker exec -it forests npx prisma format` 
+en een migration aanmaken `docker exec -it forests npx prisma migrate dev`. Dan moet je ook nog  `docker exec -it forests npx prisma generate` doen. 
+Of je kan de docker service herstarten. Als je veranderingen maakt die ook voor de gateway uit maken, moet je ook die service herstarten (of `docker exec -it api-gateway npx prisma generate`).
+
+5. De server / API-gateway zal starten op de aangegeven poort. Je kunt dan API-verzoeken sturen (GET, POST, PUT, DELETE, etc.) om data aan te maken, op te vragen of te wijzigen.
 
 ## Functionaliteiten (vooralsnog / gepland)
 - Basis CRUD-functionaliteit voor bosdata, plantendata en statusinformatie
@@ -46,3 +51,5 @@ De backend maakt gebruik van:
 - Toevoegen van extra microservices met onafhankelijke taken (zoals sensordata en communicatie binnen de applicatie voor gebruikers)
 - Eventuele implementatie van authenticatie en autorisatie
 - Verbetering van beveiliging en validatie d.m.v. middleware
+
+## Schema aanpassen

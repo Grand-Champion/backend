@@ -1,10 +1,16 @@
 /* eslint-disable no-console */
 const { PrismaClient } = require('@prisma/client');
-const { PrismaLibSql } = require('@prisma/adapter-libsql');
 const { createPlantFactory, resetPositions } = require('./factories');
+require('dotenv').config();
+const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
+const bcrypt = require("bcryptjs");
 
-const adapter = new PrismaLibSql({
-    url: "file:./file.db"
+const adapter = new PrismaMariaDb({
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_DATABASE,
+    port: process.env.DATABASE_PORT,
 });
 
 const prisma = new PrismaClient({ adapter });
@@ -18,8 +24,10 @@ async function main() {
     // Maak nieuwe user
     const user = await prisma.user.create({
         data: {
-            email: 'admin@voedselbos.nl',
-            password: 'admin123',
+            email: 'admin',
+            password: bcrypt.hashSync('admin123', 10),
+            displayName: "Admin",
+            role: "admin"
         }
     });
     console.log(`✅ Created user: ${user.email}`);
@@ -43,8 +51,8 @@ async function main() {
             maxSoilPH: 7.0,
             minSoilMoisture: 40,
             maxSoilMoisture: 70,
-            minSunlight: 6,
-            maxSunlight: 12,
+            minSunlight: 40,
+            maxSunlight: 75,
             image: 'https://upload.wikimedia.org/wikipedia/commons/1/19/Tree_with_red_apples_in_Barkedal_4.jpg',
         }
     });
@@ -67,8 +75,8 @@ async function main() {
             maxSoilPH: 7.5,
             minSoilMoisture: 45,
             maxSoilMoisture: 75,
-            minSunlight: 6,
-            maxSunlight: 10,
+            minSunlight: 40,
+            maxSunlight: 70,
             image: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Pear_in_tree_0465.jpg',
         }
     });
@@ -91,8 +99,8 @@ async function main() {
             maxSoilPH: 6.5,
             minSoilMoisture: 60,
             maxSoilMoisture: 80,
-            minSunlight: 6,
-            maxSunlight: 10,
+            minSunlight: 50,
+            maxSunlight: 75,
             image: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Fragaria_vesca_LC0389.jpg',
         }
     });
@@ -115,8 +123,8 @@ async function main() {
             maxSoilPH: 6.5,
             minSoilMoisture: 50,
             maxSoilMoisture: 70,
-            minSunlight: 5,
-            maxSunlight: 10,
+            minSunlight: 45,
+            maxSunlight: 70,
             image: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Framboise_Margy_3.jpg',
         }
     });
@@ -139,8 +147,8 @@ async function main() {
             maxSoilPH: 7.0,
             minSoilMoisture: 30,
             maxSoilMoisture: 60,
-            minSunlight: 4,
-            maxSunlight: 10,
+            minSunlight: 40,
+            maxSunlight: 65,
             image: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/BlackberryBush.jpg',
         }
     });
@@ -163,8 +171,8 @@ async function main() {
             maxSoilPH: 5.5,
             minSoilMoisture: 50,
             maxSoilMoisture: 70,
-            minSunlight: 6,
-            maxSunlight: 10,
+            minSunlight: 50,
+            maxSunlight: 75,
             image: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Rochester_blueberries.JPG',
         }
     });
@@ -187,6 +195,7 @@ async function main() {
             name: 'Rotterdam Urban Garden',
             location: 'Rotterdam West',
             ownerId: user.id,
+            image: '/images/food-forest-2.jpg'
         }
     });
     console.log(`✅ Created forest: ${forest2.name}`);
@@ -196,6 +205,7 @@ async function main() {
             name: 'HZ Green Office',
             location: 'Vlissingen',
             ownerId: user.id,
+            image: '/images/food-forest-3.jpg'
         }
     });
     console.log(`✅ Created forest: ${forest3.name}`);
