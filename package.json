@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "mocha": "^11.7.5"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
